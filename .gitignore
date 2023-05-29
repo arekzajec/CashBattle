@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Project-related
+AoK*
+CMakeCache.txt
+CMakeFiles
+Makefile
+moc*_parameters
+cmake_install.cmake
