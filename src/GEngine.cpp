@@ -15,14 +15,14 @@ Question GEngine::read_question(std::ifstream & qfs, int number) {
     return Question(category,question,answer,tips,number);
 }
 
-GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _quesions_set,
+GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
             int _pot, int _oldpot, int _minoldpot, std::array<int,3> _maxpoints,
             int _active_team_max_points, state _current_state, Team * _active_team,
             ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
             int _current_question_ind, bool _category_visible, bool _question_visible,
             bool _tips_visible, int _rand_answ_pos, int _ind) :
     teams(_teams),
-    quesions_set(_quesions_set),
+    questions_set(_questions_set),
     pot(_pot),
     oldpot(_oldpot),
     minoldpot(_minoldpot),
@@ -44,7 +44,7 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _quesion
 std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
            int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int> GStateSnap::get_data() 
 {
-    return std::make_tuple(teams,quesions_set,pot,oldpot,minoldpot,maxpoints,
+    return std::make_tuple(teams,questions_set,pot,oldpot,minoldpot,maxpoints,
                  active_team_max_points,current_state,active_team,
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
@@ -74,15 +74,15 @@ GEngine::GEngine() :
 }
 
 GEngine::GEngine(std::ifstream & qf) : GEngine() {
-    quesions_set.push_back(Question("Podpowiedź","","",{"","",""},0));
+    questions_set.push_back(Question("Podpowiedź","","",{"","",""},0));
     for (int i=1;!qf.eof();++i) {
-        quesions_set.push_back(read_question(qf,i));
+        questions_set.push_back(read_question(qf,i));
     }
-    rand_quest = std::uniform_int_distribution<int>(1,quesions_set.size()-1);
+    rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }
 
 void GEngine::add_snap() {
-    snaps.push(GStateSnap(teams,quesions_set,pot,oldpot,minoldpot,
+    snaps.push(GStateSnap(teams,questions_set,pot,oldpot,minoldpot,
                           maxpoints,active_team_max_points,current_state,
                           active_team,active_team_key,highest_bid,
                           old_highest_bid,current_question_ind,
@@ -92,7 +92,7 @@ void GEngine::add_snap() {
 
 void GEngine::use_last_snap() {
     if (!snaps.empty()) {
-        std::tie(teams,quesions_set,pot,oldpot,minoldpot,maxpoints,
+        std::tie(teams,questions_set,pot,oldpot,minoldpot,maxpoints,
                  active_team_max_points,current_state,active_team,
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
@@ -293,7 +293,7 @@ void GEngine::perform_action(ekey key) {
                 active_team_max_points = active_team->get_points();
                 current_state = state::question;
             }
-        }
+        };break;
         case state::question : {
             if (key == ekey::t) {
                 if (!tips_visible) {
@@ -305,15 +305,21 @@ void GEngine::perform_action(ekey key) {
             if (key == ekey::a) {
                 active_team->give_points(pot);
                 oldpot=0;
-                quesions_set.erase(quesions_set.begin()+current_question_ind);
+                remove_question(current_question_ind);
                 reset_vars();
-                current_state = state::idle;
+                if (!is_questions_set_empty())
+                    current_state = state::idle;
+                else
+                    current_state = state::end;
             }
             if (key == ekey::d) {
                 oldpot=pot;
-                quesions_set.erase(quesions_set.begin()+current_question_ind);
+                remove_question(current_question_ind);
                 reset_vars();
-                current_state = state::idle;
+                if (!is_questions_set_empty())
+                    current_state = state::idle;
+                else
+                    current_state = state::end;
             }
             if (key == ekey::s) {
                 if (timer.is_runnung())
@@ -329,6 +335,9 @@ void GEngine::perform_action(ekey key) {
                 if (active_team->get_points() < active_team_max_points)
                     active_team->give_points(100);
             }
+        }
+        case state::end : {
+
         }
     }
     if (active_team) {
@@ -373,8 +382,14 @@ void GEngine::reset_vars() {
 
 std::vector<std::string> GEngine::get_all_categories() const {
     std::vector<std::string> ans;
-    for (auto & x : quesions_set) {
+    for (auto & x : questions_set) {
         ans.push_back(x.get_category());
     }
     return ans;
+}
+
+void GEngine::remove_question(int ind) {
+    questions_set.erase(questions_set.begin()+ind);
+    if (!is_questions_set_empty())
+        rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }

@@ -9,7 +9,7 @@
 //ładny interfejs operatora z info z o punktacji
 //id pytania i odpowiedzi do pliku
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
-//więcej opcji wywołania (mirror/czas_odp/punktacja)
+//więcej opcji wywołania (mirror/czas_odp/punktacja) - getopts + script + .json
 //lepsze ikony dla 'gora' 'dol' 'enter'
 //refaktor:: polepszyć hermetyzacje
 //refaktor:: ujenolicić nazewnictwo

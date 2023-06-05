@@ -20,6 +20,7 @@ QStatePanel::QStatePanel (QWidget * parent,QFont font) : QWidget(parent) {
     qstates.push_back(newQLabel(QString("licytacja - blokada"),font));
     qstates.push_back(newQLabel(QString("sprzedane"),font));
     qstates.push_back(newQLabel(QString("pytanie"),font));
+    qstates.push_back(newQLabel(QString("koniec"),font));
     for(auto & x : qstates)
         mainlayout->addWidget(x);
 }
@@ -36,6 +37,7 @@ void QStatePanel::refresh(state current_state, bool is_any_team_va_banque) {
     qstates[8]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::lic && is_any_team_va_banque ? "white":"lightgrey")+"; color : black; }");
     qstates[9]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::sold ? "white":"lightgrey")+"; color : black; }");
     qstates[10]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::question ? "white":"lightgrey")+"; color : black; }");
+    qstates[11]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::end ? "white":"lightgrey")+"; color : black; }");
 }
 
 QButtonDesc::QButtonDesc(QWidget * parent, QFont font) : QWidget(parent) {

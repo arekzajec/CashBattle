@@ -13,13 +13,13 @@
 #include <stack>
 #include <tuple>
 
-enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, question};
+enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, question, end};
 enum class ekey {unknown, z, x, c, enter, up, down, t, a, d, p, e, s, u};
 
 class GStateSnap {
 protected:
     std::array<Team,3> teams;
-    std::vector<Question> quesions_set;
+    std::vector<Question> questions_set;
     int pot;
     int oldpot;
     int minoldpot;
@@ -37,7 +37,7 @@ protected:
     int rand_answ_pos;
     int ind;
 public:
-    GStateSnap(std::array<Team,3> _teams, std::vector<Question> _quesions_set,
+    GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
                int _pot, int _oldpot, int _minoldpot, std::array<int,3> _maxpoints,
                int _active_team_max_points, state _current_state, Team * _active_team,
                ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
@@ -70,7 +70,10 @@ class GEngine : public GStateSnap {
     void ready_to_lic();
     void licitation(ekey key);
     void add_snap();
+    void remove_question(int ind);
+    bool is_questions_set_empty() {return questions_set.size() <= 1;}
     void use_last_snap();
+    int end_max_points();
     GEngine();
 public:
     GEngine(std::ifstream & qf);
@@ -79,7 +82,7 @@ public:
     bool is_any_team_va_banque() const;
     void perform_action(ekey key);
     state get_current_state() const {return current_state;}
-    const Question & get_current_question() const {return quesions_set[current_question_ind];}
+    const Question & get_current_question() const {return questions_set[current_question_ind];}
     std::vector<std::string> get_all_categories() const;
     bool is_category_visible() const {return category_visible;}
     bool is_question_visible() const {return question_visible;}
