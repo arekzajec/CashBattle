@@ -275,8 +275,10 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine) :
     mainlayout = new QHBoxLayout(this);
     qstatepanel = new QStatePanel(this,font);
     qbuttons = new QButtonDescGroup(this,gengine,font);
+    qlocalgamew = new GameWindow(*gengine);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);
+    mainlayout->addWidget(qlocalgamew);
 
     QObject::connect(qbuttons,&QButtonDescGroup::released_signal,this,&OperatorPanel::qbuttonhandler);
 
@@ -292,6 +294,7 @@ void OperatorPanel::refresh() {
     bool ivabq = gengine->is_any_team_va_banque();
     qstatepanel->refresh(cs,ivabq);
     qbuttons->refresh();
+    qlocalgamew->refresh();
     update();
 }
 
@@ -299,8 +302,10 @@ void OperatorPanel::send2engine_and_refresh(ekey key) {
     state old_state = gengine->get_current_state();
     gengine->perform_action(key);
     if (key == ekey::enter && old_state == state::idle ||
-        key == ekey::enter && old_state == state::punishment)
+        key == ekey::enter && old_state == state::punishment) {
         gwindow->cat_rand_animation();
+        qlocalgamew->cat_rand_animation();
+        }
     gwindow->refresh();
     refresh();
 }

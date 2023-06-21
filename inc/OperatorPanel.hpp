@@ -65,6 +65,7 @@ class OperatorPanel : public QWidget {
 private:
     GameWindow * gwindow;
     GEngine * gengine;
+    GameWindow * qlocalgamew;
     QHBoxLayout * mainlayout;
     QStatePanel * qstatepanel;
     QButtonDescGroup * qbuttons;
