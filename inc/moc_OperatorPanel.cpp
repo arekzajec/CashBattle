@@ -1,18 +1,19 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'OperatorPanel.hpp'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.12.8)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.15.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
+#include <memory>
 #include "OperatorPanel.hpp"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'OperatorPanel.hpp' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.12.8. It"
+#error "This file was generated using the moc from 5.15.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -66,7 +67,7 @@ void QButtonDesc::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         auto *_t = static_cast<QButtonDesc *>(_o);
-        Q_UNUSED(_t)
+        (void)_t;
         switch (_id) {
         case 0: _t->released_signal(); break;
         default: ;
@@ -81,11 +82,11 @@ void QButtonDesc::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             }
         }
     }
-    Q_UNUSED(_a);
+    (void)_a;
 }
 
 QT_INIT_METAOBJECT const QMetaObject QButtonDesc::staticMetaObject = { {
-    &QWidget::staticMetaObject,
+    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
     qt_meta_stringdata_QButtonDesc.data,
     qt_meta_data_QButtonDesc,
     qt_static_metacall,
@@ -185,7 +186,7 @@ void QButtonDescGroup::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         auto *_t = static_cast<QButtonDescGroup *>(_o);
-        Q_UNUSED(_t)
+        (void)_t;
         switch (_id) {
         case 0: _t->released_signal((*reinterpret_cast< ekey(*)>(_a[1]))); break;
         case 1: _t->released_slot(); break;
@@ -204,7 +205,7 @@ void QButtonDescGroup::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 }
 
 QT_INIT_METAOBJECT const QMetaObject QButtonDescGroup::staticMetaObject = { {
-    &QWidget::staticMetaObject,
+    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
     qt_meta_stringdata_QButtonDescGroup.data,
     qt_meta_data_QButtonDescGroup,
     qt_static_metacall,
@@ -246,8 +247,78 @@ int QButtonDescGroup::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 // SIGNAL 0
 void QButtonDescGroup::released_signal(ekey _t1)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+struct qt_meta_stringdata_OperatorQuestionInfo_t {
+    QByteArrayData data[1];
+    char stringdata0[21];
+};
+#define QT_MOC_LITERAL(idx, ofs, len) \
+    Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
+    qptrdiff(offsetof(qt_meta_stringdata_OperatorQuestionInfo_t, stringdata0) + ofs \
+        - idx * sizeof(QByteArrayData)) \
+    )
+static const qt_meta_stringdata_OperatorQuestionInfo_t qt_meta_stringdata_OperatorQuestionInfo = {
+    {
+QT_MOC_LITERAL(0, 0, 20) // "OperatorQuestionInfo"
+
+    },
+    "OperatorQuestionInfo"
+};
+#undef QT_MOC_LITERAL
+
+static const uint qt_meta_data_OperatorQuestionInfo[] = {
+
+ // content:
+       8,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       0,    0, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       0,       // signalCount
+
+       0        // eod
+};
+
+void OperatorQuestionInfo::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    (void)_o;
+    (void)_id;
+    (void)_c;
+    (void)_a;
+}
+
+QT_INIT_METAOBJECT const QMetaObject OperatorQuestionInfo::staticMetaObject = { {
+    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
+    qt_meta_stringdata_OperatorQuestionInfo.data,
+    qt_meta_data_OperatorQuestionInfo,
+    qt_static_metacall,
+    nullptr,
+    nullptr
+} };
+
+
+const QMetaObject *OperatorQuestionInfo::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *OperatorQuestionInfo::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_meta_stringdata_OperatorQuestionInfo.stringdata0))
+        return static_cast<void*>(this);
+    return QWidget::qt_metacast(_clname);
+}
+
+int OperatorQuestionInfo::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    return _id;
 }
 struct qt_meta_stringdata_OperatorPanel_t {
     QByteArrayData data[5];
@@ -298,7 +369,7 @@ void OperatorPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         auto *_t = static_cast<OperatorPanel *>(_o);
-        Q_UNUSED(_t)
+        (void)_t;
         switch (_id) {
         case 0: _t->qbuttonhandler((*reinterpret_cast< ekey(*)>(_a[1]))); break;
         default: ;
@@ -307,7 +378,7 @@ void OperatorPanel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 }
 
 QT_INIT_METAOBJECT const QMetaObject OperatorPanel::staticMetaObject = { {
-    &QWidget::staticMetaObject,
+    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
     qt_meta_stringdata_OperatorPanel.data,
     qt_meta_data_OperatorPanel,
     qt_static_metacall,

@@ -68,7 +68,7 @@ class GameWindow : public QWidget {
 
     QTimer *gwtimer;
 public:
-    GameWindow(const GEngine & _gengine);
+    GameWindow(const GEngine & _gengine, double scale = 1);
     void refresh();
     void cat_rand_animation();
 };

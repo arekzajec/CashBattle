@@ -264,6 +264,58 @@ void QButtonDescGroup::refresh() {
     }
 }
 
+OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidget(parent) {
+    layout = new QVBoxLayout(this);
+    qquestion = new QLabel(this);
+    qquestion->setStyleSheet("QLabel {background-color : grey; color : black; }");
+    qquestion->setWordWrap(true);
+    qquestion->setFont(font);
+    qquestion->setAlignment(Qt::AlignCenter);
+
+    qanswer = new QLabel(this);
+    qanswer->setStyleSheet("QLabel {background-color : green; color : black; }");
+    qanswer->setWordWrap(true);
+    qanswer->setFont(font);
+    qanswer->setAlignment(Qt::AlignCenter);
+
+    qtip1 = new QLabel(this);
+    qtip1->setStyleSheet("QLabel {background-color : red; color : black; }");
+    qtip1->setWordWrap(true);
+    qtip1->setFont(font);
+    qtip1->setAlignment(Qt::AlignCenter);
+
+    qtip2 = new QLabel(this);
+    qtip2->setStyleSheet("QLabel {background-color : red; color : black; }");
+    qtip2->setWordWrap(true);
+    qtip2->setFont(font);
+    qtip2->setAlignment(Qt::AlignCenter);
+
+    qtip3 = new QLabel(this);
+    qtip3->setStyleSheet("QLabel {background-color : red; color : black; }");
+    qtip3->setWordWrap(true);
+    qtip3->setFont(font);
+    qtip3->setAlignment(Qt::AlignCenter);
+
+    layout->addWidget(qquestion);
+    layout->addWidget(qanswer);
+    layout->addWidget(qtip1);
+    layout->addWidget(qtip2);
+    layout->addWidget(qtip3);
+}
+
+void OperatorQuestionInfo::replace_question(const Question & q) {
+    qquestion->setText(QString::fromStdString(q.get_question()));
+    qanswer->setText(QString::fromStdString(q.get_answer()));
+    qtip1->setText(QString::fromStdString(q.get_tips()[0]));
+    qtip2->setText(QString::fromStdString(q.get_tips()[1]));
+    qtip3->setText(QString::fromStdString(q.get_tips()[2]));
+    qquestion->update();
+    qanswer->update();
+    qtip1->update();
+    qtip2->update();
+    qtip3->update();
+}
+
 OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine) : 
         gwindow(_gwindow), 
         gengine(_gengine) 
@@ -275,10 +327,17 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine) :
     mainlayout = new QHBoxLayout(this);
     qstatepanel = new QStatePanel(this,font);
     qbuttons = new QButtonDescGroup(this,gengine,font);
-    qlocalgamew = new GameWindow(*gengine);
+    rightlayout = new QVBoxLayout();
+    qlocalgamew = new GameWindow(*gengine, 0.4);
+    qquest = new OperatorQuestionInfo(this,font);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);
-    mainlayout->addWidget(qlocalgamew);
+    mainlayout->addLayout(rightlayout);
+    mainlayout->setStretch(0, 1);
+    mainlayout->setStretch(1, 1);
+    mainlayout->setStretch(2, 1);
+    rightlayout->addWidget(qlocalgamew);
+    rightlayout->addWidget(qquest);
 
     QObject::connect(qbuttons,&QButtonDescGroup::released_signal,this,&OperatorPanel::qbuttonhandler);
 
@@ -295,6 +354,8 @@ void OperatorPanel::refresh() {
     qstatepanel->refresh(cs,ivabq);
     qbuttons->refresh();
     qlocalgamew->refresh();
+    if (cs == state::category)
+        qquest->replace_question(gengine->get_current_question());
     update();
 }
 

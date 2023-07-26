@@ -83,11 +83,11 @@ void MyQTimeLabel::time_refresh() {
     this->update();
 }
 
-GameWindow::GameWindow(const GEngine & _gengine) : gengine(_gengine) {
+GameWindow::GameWindow(const GEngine & _gengine, double scale) : gengine(_gengine) {
     QFontDatabase::addApplicationFont("./font/01 Digit.ttf");
-    QFont font("01 Digit",120);
-    QFont font2("Arial",50);
-    QFont font3("01 Digit",50);
+    QFont font("01 Digit",120*scale);
+    QFont font2("Arial",50*scale);
+    QFont font3("01 Digit",50*scale);
 
     this->setWindowTitle("Awantura o Kasę");
     this->setStyleSheet("QWidget { background-color : black;}");

@@ -60,15 +60,31 @@ private slots:
     void released_slot();
 };
 
+class OperatorQuestionInfo : public QWidget {
+    Q_OBJECT
+private:
+    QVBoxLayout *layout;
+    QLabel *qquestion;
+    QLabel *qanswer;
+    QLabel *qtip1;
+    QLabel *qtip2;
+    QLabel *qtip3;
+public:
+    OperatorQuestionInfo(QWidget * parent, QFont font);
+    void replace_question(const Question & q);
+};
+
 class OperatorPanel : public QWidget {
     Q_OBJECT
 private:
     GameWindow * gwindow;
     GEngine * gengine;
     GameWindow * qlocalgamew;
+    OperatorQuestionInfo * qquest;
     QHBoxLayout * mainlayout;
     QStatePanel * qstatepanel;
     QButtonDescGroup * qbuttons;
+    QVBoxLayout * rightlayout;
     void send2engine_and_refresh(ekey key);
 public:
     OperatorPanel(GameWindow * _gwindow, GEngine * _gengine);
