@@ -83,7 +83,7 @@ void MyQTimeLabel::time_refresh() {
     this->update();
 }
 
-GameWindow::GameWindow(const GEngine & _gengine, double scale) : gengine(_gengine) {
+GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored) : gengine(_gengine) {
     QFontDatabase::addApplicationFont("./font/01 Digit.ttf");
     QFont font("01 Digit",120*scale);
     QFont font2("Arial",50*scale);
@@ -107,12 +107,14 @@ GameWindow::GameWindow(const GEngine & _gengine, double scale) : gengine(_gengin
         qlic_layout->setStretch(1, 1);
     qmain_layout->addLayout(qlic_layout);
         qteams_layout = new QHBoxLayout();
-            qteam1 = new QTeam(this,gengine.get_team(0),font,font2);
-        qteams_layout->addWidget(qteam1);
-            qteam2 = new QTeam(this,gengine.get_team(1),font,font2);
-        qteams_layout->addWidget(qteam2);
-            qteam3 = new QTeam(this,gengine.get_team(2),font,font2);
-        qteams_layout->addWidget(qteam3);
+            for (int i=0;i<3;++i)
+                qteam[i] = new QTeam(this,gengine.get_team(i),font,font2);
+            if (is_mirrored)
+                for (int i=2;i>=0;--i)
+                    qteams_layout->addWidget(qteam[i]);
+            else
+                for (int i=0;i<3;++i)
+                    qteams_layout->addWidget(qteam[i]);
             qpot_layout = new QVBoxLayout();
                 qtimer = new MyQTimeLabel(this,gengine);
                 qtimer->setStyleSheet("QLabel {background-color : black; color : white; }");
@@ -175,9 +177,7 @@ GameWindow::GameWindow(const GEngine & _gengine, double scale) : gengine(_gengin
     refresh();
 }
 void GameWindow::refresh() {
-    qteam1->refresh();
-    qteam2->refresh();
-    qteam3->refresh();
+    for (auto & x : qteam) x->refresh(); 
     qpot->setText(QString::number(gengine.get_pot()));
     qpot->update();
     if (gengine.is_category_visible()) {

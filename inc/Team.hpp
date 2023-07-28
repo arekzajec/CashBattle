@@ -2,6 +2,7 @@
 #define TEAM_HPP
 
 #include <string>
+#include <vector>
 
 class Team {
     std::string name;
@@ -21,6 +22,7 @@ public:
         invested(0), 
         highlighted(false) 
     {}
+    Team(std::vector<std::string> in) : Team(in[0],in[1],in[2],std::stod(in[3])) {}
     std::string get_name() const {return name;};
     std::string get_color() const {return color;};
     std::string get_hcolor() const {return hcolor;};

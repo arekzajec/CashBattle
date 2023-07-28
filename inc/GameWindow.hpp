@@ -54,9 +54,7 @@ class GameWindow : public QWidget {
             QLabel *qlic;
             QLabel *qtimestr;
         QHBoxLayout *qteams_layout;
-            QTeam *qteam1;
-            QTeam *qteam2;
-            QTeam *qteam3;
+            std::array<QTeam *,3> qteam;
             QVBoxLayout *qpot_layout;
                 MyQTimeLabel *qtimer;
                 QLabel *qpot_str;
@@ -68,7 +66,7 @@ class GameWindow : public QWidget {
 
     QTimer *gwtimer;
 public:
-    GameWindow(const GEngine & _gengine, double scale = 1);
+    GameWindow(const GEngine & _gengine, double scale = 1, bool is_mirrored = false);
     void refresh();
     void cat_rand_animation();
 };

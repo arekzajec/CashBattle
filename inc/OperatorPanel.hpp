@@ -29,9 +29,9 @@ private:
     QPushButton * qbutton;
     QLabel * qdesc;
 public:
-    QButtonDesc(QWidget * parent, QFont font);
-    QButtonDesc(QWidget * parent, QFont font, QString str);
-    QButtonDesc(QWidget * parent, QFont font, QIcon ico);
+    QButtonDesc(QWidget * parent, QFont font, double scale=1.0);
+    QButtonDesc(QWidget * parent, QFont font, QString str, double scale=1.0);
+    QButtonDesc(QWidget * parent, QFont font, QIcon ico, double scale=1.0);
     void setButtonEnabled(bool is_enabled) {qbutton->setEnabled(is_enabled);}
     void refresh();
     void setLabelText(QString str) {qdesc->setText(str);}
@@ -52,7 +52,7 @@ private:
     void setLabelText(int ind,QString str);
     void licitation_disp(Team * ateam);
 public:
-    QButtonDescGroup(QWidget * parent, GEngine * _gengine, QFont font);
+    QButtonDescGroup(QWidget * parent, GEngine * _gengine, QFont font, double scale=1.0);
     void refresh();
 signals:
     void released_signal(ekey key);
@@ -87,7 +87,7 @@ private:
     QVBoxLayout * rightlayout;
     void send2engine_and_refresh(ekey key);
 public:
-    OperatorPanel(GameWindow * _gwindow, GEngine * _gengine);
+    OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double scale = 1.0);
     void refresh();
     void keyPressEvent(QKeyEvent *event) override;
 public slots:

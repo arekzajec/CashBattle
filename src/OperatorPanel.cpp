@@ -40,14 +40,14 @@ void QStatePanel::refresh(state current_state, bool is_any_team_va_banque) {
     qstates[11]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::end ? "white":"lightgrey")+"; color : black; }");
 }
 
-QButtonDesc::QButtonDesc(QWidget * parent, QFont font) : QWidget(parent) {
+QButtonDesc::QButtonDesc(QWidget * parent, QFont font, double scale) : QWidget(parent) {
     mainlayout = new QHBoxLayout(this);
     qbutton = new QPushButton(this);
     qbutton->setFont(font);
     qbutton->setEnabled(false);
-    qbutton->setMinimumWidth(100);
-    qbutton->setMaximumWidth(100);
-    qbutton->setMinimumHeight(45);
+    qbutton->setMinimumWidth(100*scale);
+    qbutton->setMaximumWidth(100*scale);
+    qbutton->setMinimumHeight(45*scale);
     qdesc = new QLabel("tmp",this);
     qdesc->setAlignment(Qt::AlignLeft);
     qdesc->setFont(font);
@@ -57,13 +57,13 @@ QButtonDesc::QButtonDesc(QWidget * parent, QFont font) : QWidget(parent) {
     QObject::connect(qbutton,&QPushButton::released,this,&QButtonDesc::released_signal);
 }
 
-QButtonDesc::QButtonDesc(QWidget * parent, QFont font, QString str) : QButtonDesc(parent,font) {
+QButtonDesc::QButtonDesc(QWidget * parent, QFont font, QString str, double scale) : QButtonDesc(parent,font,scale) {
     qbutton->setText(str);
 }
 
-QButtonDesc::QButtonDesc(QWidget * parent, QFont font, QIcon ico) : QButtonDesc(parent,font) {
+QButtonDesc::QButtonDesc(QWidget * parent, QFont font, QIcon ico, double scale) : QButtonDesc(parent,font,scale) {
     qbutton->setIcon(ico);
-    qbutton->setIconSize(QSize(35,35));
+    qbutton->setIconSize(QSize(35*scale,35*scale));
 }
 
 void QButtonDesc::refresh() {
@@ -71,25 +71,25 @@ void QButtonDesc::refresh() {
     qdesc->update();
 }
 
-QButtonDescGroup::QButtonDescGroup(QWidget * parent, GEngine * _gengine, QFont font) : QWidget(parent), gengine(_gengine) {
+QButtonDescGroup::QButtonDescGroup(QWidget * parent, GEngine * _gengine, QFont font, double scale) : QWidget(parent), gengine(_gengine) {
     mainlayout = new QVBoxLayout(this);
     qdesc = new QLabel("Przyciski");
     qdesc->setAlignment(Qt::AlignCenter);
     qdesc->setFont(font);
     mainlayout->addWidget(qdesc);
-    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_ArrowUp)));
-    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_ArrowDown)));
-    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_DialogOkButton)));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("P")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("E")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("Z")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("X")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("C")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("A")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("D")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("T")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("S")));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("U")));
+    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_ArrowUp),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_ArrowDown),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,style()->standardIcon(QStyle::SP_DialogOkButton),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("P"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("E"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("Z"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("X"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("C"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("A"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("D"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("T"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("S"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("U"),scale));
     for (auto & x : qbuttons) {
         mainlayout->addWidget(x);
         QObject::connect(x,&QButtonDesc::released_signal,this,&QButtonDescGroup::released_slot);
@@ -316,19 +316,19 @@ void OperatorQuestionInfo::replace_question(const Question & q) {
     qtip3->update();
 }
 
-OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine) : 
+OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double scale) : 
         gwindow(_gwindow), 
         gengine(_gengine) 
 {
     this->setStyleSheet("QWidget { background-color : lightgrey;}");
     
-    QFont font("Arial",20);
+    QFont font("Arial",20*scale);
 
     mainlayout = new QHBoxLayout(this);
     qstatepanel = new QStatePanel(this,font);
     qbuttons = new QButtonDescGroup(this,gengine,font);
     rightlayout = new QVBoxLayout();
-    qlocalgamew = new GameWindow(*gengine, 0.4);
+    qlocalgamew = new GameWindow(*gengine, 0.35*scale);
     qquest = new OperatorQuestionInfo(this,font);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);
@@ -338,6 +338,8 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine) :
     mainlayout->setStretch(2, 1);
     rightlayout->addWidget(qlocalgamew);
     rightlayout->addWidget(qquest);
+    rightlayout->setStretch(0,1);
+    rightlayout->setStretch(1,1);
 
     QObject::connect(qbuttons,&QButtonDescGroup::released_signal,this,&OperatorPanel::qbuttonhandler);
 
@@ -365,7 +367,6 @@ void OperatorPanel::send2engine_and_refresh(ekey key) {
     if (key == ekey::enter && old_state == state::idle ||
         key == ekey::enter && old_state == state::punishment) {
         gwindow->cat_rand_animation();
-        qlocalgamew->cat_rand_animation();
         }
     gwindow->refresh();
     refresh();

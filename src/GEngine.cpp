@@ -1,18 +1,24 @@
 #include "GEngine.hpp"
+#include "Question.hpp"
+#include <fstream>
+#include <ostream>
+#include <string>
 
 Question GEngine::read_question(std::ifstream & qfs, int number) {
     std::string category;
     std::string question;
     std::string answer;
     std::array<std::string,3> tips;
+    bool is_used;
     std::getline(qfs,category,';');
     std::getline(qfs,question,';');
     std::getline(qfs,answer,';');
     std::getline(qfs,tips[0],';');
     std::getline(qfs,tips[1],';');
     std::getline(qfs,tips[2],';');
+    qfs >> is_used;
     qfs.ignore(1000,'\n');
-    return Question(category,question,answer,tips,number);
+    return Question(category,question,answer,tips,is_used,number);
 }
 
 GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
@@ -53,10 +59,8 @@ std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3
 }
 
 
-GEngine::GEngine() : 
-    GStateSnap({Team("niebiescy","#19247C","#007FFF",5000),
-                Team("zieloni","#006633","#33CC66",3000),
-                Team("żółci","#C0A62C","#F9E04B",1000)},
+GEngine::GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq) : 
+    GStateSnap(_teams,
                 std::vector<Question>(), //questions_set
                 0, 0, 0, //pot, oldpot, minoldpot
                 {0,0,0}, 0, //maxpoints, active_team_max_points
@@ -66,17 +70,27 @@ GEngine::GEngine() :
                 false, false, false, //visible : category, question, tips
                 -1, -1 // rand_answ_pos, ind
             ),
-    timer(60)
+    outf(_outf),
+    timer(time2answer)
 {
     rand_gen = std::mt19937(rand_dev());
     rand_tip = std::uniform_int_distribution<int>(0,3);
-    rand_tip_to_buy = std::uniform_int_distribution<int>(0,9);
+    rand_tip_to_buy = std::uniform_int_distribution<int>(0,tip_freq-1);
 }
 
-GEngine::GEngine(std::ifstream & qf) : GEngine() {
-    questions_set.push_back(Question("Podpowiedź","","",{"","",""},0));
+GEngine::GEngine(std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq) : GEngine(_outf,_teams,time2answer,tip_freq) {
+    questions_set.push_back(Question("Podpowiedź","","",{"","",""},false,0));
     for (int i=1;!qf.eof();++i) {
-        questions_set.push_back(read_question(qf,i));
+        Question tmp = read_question(qf, i);
+        if (!qf) {
+            qf.clear();
+            qf.ignore(1000,'\n');
+            continue;
+        }
+        if (tmp.is_used())
+            used_questions_set.push_back(tmp);
+        else
+            questions_set.push_back(tmp);
     }
     rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }
@@ -389,7 +403,28 @@ std::vector<std::string> GEngine::get_all_categories() const {
 }
 
 void GEngine::remove_question(int ind) {
+    used_questions_set.push_back(questions_set[ind]);
     questions_set.erase(questions_set.begin()+ind);
     if (!is_questions_set_empty())
         rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
+}
+
+std::ostream & operator<<(std::ostream & os, const Question & q) {
+    os << q.get_category() << ";"
+       << q.get_question() << ";"
+       << q.get_answer()   << ";"
+       << q.get_tips()[0]  << ";"
+       << q.get_tips()[1]  << ";"
+       << q.get_tips()[2]  << ";";
+    return os;
+}
+
+GEngine::~GEngine() {
+    if (current_question_ind > 0 && current_state == state::question)
+        remove_question(current_question_ind);
+    questions_set.erase(questions_set.begin());
+    for (auto & x : questions_set)
+        outf << x << " 0;" << std::endl;
+    for (auto & x: used_questions_set)
+        outf << x << " 1;" << std::endl;
 }

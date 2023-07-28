@@ -20,6 +20,7 @@ class GStateSnap {
 protected:
     std::array<Team,3> teams;
     std::vector<Question> questions_set;
+    std::vector<Question> used_questions_set;
     int pot;
     int oldpot;
     int minoldpot;
@@ -48,6 +49,7 @@ public:
 };
 
 class GEngine : public GStateSnap {
+    std::ofstream & outf;
     std::random_device rand_dev;
     std::mt19937 rand_gen;
     std::uniform_int_distribution<int> rand_quest;
@@ -74,9 +76,9 @@ class GEngine : public GStateSnap {
     bool is_questions_set_empty() {return questions_set.size() <= 1;}
     void use_last_snap();
     int end_max_points();
-    GEngine();
+    GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10);
 public:
-    GEngine(std::ifstream & qf);
+    GEngine(std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10);
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;
@@ -93,6 +95,7 @@ public:
     int get_va_banque_tab_val(int ind) const {return va_banque_tab[ind];}
     bool is_timer_runnung() const {return timer.is_runnung();}
     bool is_any_snap() const {return !snaps.empty();}
+    virtual ~GEngine();
 };
 
 

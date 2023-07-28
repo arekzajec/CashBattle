@@ -1,2 +1,2 @@
-Literatura światowa; Królem jakiego kraju zostaje Makbet, tytułowa postać z dramatu Williama Szekspira?; Szkocji; Danii; Anglii; Norwegii;
-Piłka nożna; Ile państw azjatyckich było gospodarzem mistrzostw świata w Piłce nożnej mężczyzn, zanim organizację turnieju powierzono Katarowi?;2;0;1;3;
+Literatura światowa; Królem jakiego kraju zostaje Makbet, tytułowa postać z dramatu Williama Szekspira?; Szkocji; Danii; Anglii; Norwegii; 0;
+Piłka nożna; Ile państw azjatyckich było gospodarzem mistrzostw świata w Piłce nożnej mężczyzn, zanim organizację turnieju powierzono Katarowi?;2;0;1;3; 0;
