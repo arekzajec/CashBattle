@@ -15,11 +15,12 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "SoundPlayer.hpp"
 
 //TODO:
 //naprawić opcję skalowania interfejsu operatora
+//include/exclude kategorii
 //id pytania i odpowiedzi do pliku
-//pytania muzyczne
 //rozne opcje formatu pliku pytan (.que, .json) i skrypt pomiedzy nimi
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
 //lepsze ikony dla 'gora' 'dol' 'enter'
@@ -33,7 +34,16 @@ using std::vector;
 int main(int argc, char* argv[]) {
 
     //po::options_description desc("Usage:\n" + string(argv[0]) + " -i <questions_file> [ -h ] [ -s scale ] [ -p panel_scale ] [-m]\nArguments");
-    po::options_description desc("Usage:\n" + string(argv[0]) + " -i <questions_file> [ -h ] [ -s scale ] [-m]\nArguments");
+    po::options_description desc("Usage:\n" + string(argv[0]) + 
+                                          " -i <questions_file> [ -h ]" +
+                                          " -o <question_output_file>" + 
+                                          " [ -s scale ] [-m]" +
+                                          " [ -t seconds ] [ -f x ]" +
+                                          " [ -1 name color hcolor points ]" +
+                                          " [ -2 name color hcolor points ]" +
+                                          " [ -3 name color hcolor points ]" +
+                                          " [ -e ] [ -P path ]" +
+                                          "\nArguments");
     try {
         vector<string> blue = {"niebiescy","#19247C","#007FFF","5000"};
         vector<string> green = {"zieloni","#006633","#33CC66","5000"};
@@ -50,6 +60,8 @@ int main(int argc, char* argv[]) {
             ("team1,1",po::value<vector<string>>()->multitoken()->value_name("name color hcolor points")->default_value(blue,"blue '#19247C' '#007FFF' 5000"),"options for team 1:\nname - name of team\ncolor - color for standby\nhcolor - color for highlight\npoints - starting points for team")
             ("team2,2",po::value<vector<string>>()->multitoken()->value_name("name color hcolor points")->default_value(green,"green '#006633' '#33CC66' 5000"),"options for team 2:\nsee --team1")
             ("team3,3",po::value<vector<string>>()->multitoken()->value_name("name color hcolor points")->default_value(yellow,"yellow '#C0A62C' '#F9E04B' 5000"),"options for team 3:\nsee --team1")
+            ("exclude_musical,e","do not import musical question from question set")
+            ("path_to_wavs,P",po::value<string>()->value_name("path")->default_value("sounds/"),"path do directory where .wav files for musical questions are")
         ;
         
         po::variables_map vm;
@@ -79,7 +91,12 @@ int main(int argc, char* argv[]) {
             Team(vm["team2"].as<vector<string>>()),
             Team(vm[is_mirrored ? "team1" : "team3"].as<vector<string>>())
             });
-        GEngine gengine(qf,outf,teams,vm["answer_time"].as<uint>(),vm["tip_freq"].as<uint>());
+        SoundPlayer sp;
+        GEngine gengine(&sp, qf,outf,teams,
+                        vm["answer_time"].as<uint>(),
+                        vm["tip_freq"].as<uint>(),
+                        vm.count("exclude_musical"),
+                        vm["path_to_wavs"].as<string>());
 
         GameWindow gwindow(gengine,vm["scale"].as<double>(),is_mirrored);
         gwindow.show();

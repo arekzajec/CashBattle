@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QCommonStyle>
 #include <QStyleOptionButton>
+#include <qlabel.h>
 
 class QStatePanel : public QWidget {
     QVBoxLayout * mainlayout;
@@ -64,6 +65,7 @@ class OperatorQuestionInfo : public QWidget {
     Q_OBJECT
 private:
     QVBoxLayout *layout;
+    QLabel *ismusic;
     QLabel *qquestion;
     QLabel *qanswer;
     QLabel *qtip1;

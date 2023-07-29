@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Multimedia)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 include_directories(inc)
@@ -20,4 +20,4 @@ QT5_WRAP_CPP(HDR_MOC "inc/OperatorPanel.hpp")
 
 add_executable(AoK ${SOURCES} ${HDR_MOC})
 
-target_link_libraries(AoK PRIVATE Qt5::Widgets ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(AoK PRIVATE Qt5::Widgets Qt5::Multimedia ${Boost_PROGRAM_OPTIONS_LIBRARY})

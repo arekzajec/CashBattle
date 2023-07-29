@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 class Team {
     std::string name;
@@ -38,5 +39,7 @@ public:
     void resethlight() {highlighted = false;};
     int va_banque_val() const {return points + invested;};
 };
+
+std::ostream & operator<< (std::ostream & os, const Team & T);
 
 #endif

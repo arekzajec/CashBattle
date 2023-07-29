@@ -19,6 +19,7 @@ QStatePanel::QStatePanel (QWidget * parent,QFont font) : QWidget(parent) {
     qstates.push_back(newQLabel(QString("licytacja"),font));
     qstates.push_back(newQLabel(QString("licytacja - blokada"),font));
     qstates.push_back(newQLabel(QString("sprzedane"),font));
+    qstates.push_back(newQLabel(QString("pytanie muzyczne"),font));
     qstates.push_back(newQLabel(QString("pytanie"),font));
     qstates.push_back(newQLabel(QString("koniec"),font));
     for(auto & x : qstates)
@@ -36,8 +37,9 @@ void QStatePanel::refresh(state current_state, bool is_any_team_va_banque) {
     qstates[7]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::lic && !is_any_team_va_banque ? "white":"lightgrey")+"; color : black; }");
     qstates[8]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::lic && is_any_team_va_banque ? "white":"lightgrey")+"; color : black; }");
     qstates[9]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::sold ? "white":"lightgrey")+"; color : black; }");
-    qstates[10]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::question ? "white":"lightgrey")+"; color : black; }");
-    qstates[11]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::end ? "white":"lightgrey")+"; color : black; }");
+    qstates[10]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::music_question ? "white":"lightgrey")+"; color : black; }");
+    qstates[11]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::question ? "white":"lightgrey")+"; color : black; }");
+    qstates[12]->setStyleSheet("QLabel {background-color :"+QString(current_state == state::end ? "white":"lightgrey")+"; color : black; }");
 }
 
 QButtonDesc::QButtonDesc(QWidget * parent, QFont font, double scale) : QWidget(parent) {
@@ -240,6 +242,13 @@ void QButtonDescGroup::refresh() {
         };break;
         case state::sold : {
             setButtonsEnabled({2}); //Enter
+            if (gengine->get_current_question().is_musical_q())
+                setLabelText(2,"przejdź do: pytanie muzyczne");
+            else
+                setLabelText(2,"przejdź do: pytanie");
+        };break;
+        case state::music_question : {
+            setButtonsEnabled({2}); //Enter
             setLabelText(2,"przejdź do: pytanie");
         };break;
         case state::question : {
@@ -266,6 +275,12 @@ void QButtonDescGroup::refresh() {
 
 OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidget(parent) {
     layout = new QVBoxLayout(this);
+    ismusic = new QLabel(this);
+    ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
+    ismusic->setWordWrap(true);
+    ismusic->setFont(font);
+    ismusic->setAlignment(Qt::AlignCenter);
+
     qquestion = new QLabel(this);
     qquestion->setStyleSheet("QLabel {background-color : grey; color : black; }");
     qquestion->setWordWrap(true);
@@ -296,6 +311,7 @@ OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidg
     qtip3->setFont(font);
     qtip3->setAlignment(Qt::AlignCenter);
 
+    layout->addWidget(ismusic);
     layout->addWidget(qquestion);
     layout->addWidget(qanswer);
     layout->addWidget(qtip1);
@@ -304,6 +320,13 @@ OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidg
 }
 
 void OperatorQuestionInfo::replace_question(const Question & q) {
+    if (q.is_musical_q()) {
+        ismusic->setText(QString("Pytanie muzyczne"));
+        ismusic->setStyleSheet("QLabel {background-color : orange; color : black; }");
+    } else {
+        ismusic->setText(QString("Pytanie zwykłe"));
+        ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
+    }
     qquestion->setText(QString::fromStdString(q.get_question()));
     qanswer->setText(QString::fromStdString(q.get_answer()));
     qtip1->setText(QString::fromStdString(q.get_tips()[0]));

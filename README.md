@@ -5,6 +5,7 @@ On Ubuntu 22.04
 ```bash
 sudo apt install build-essential
 sudo apt install qtbase5-dev qt5-qmake
+sudo apt install qtmultimedia5-dev
 ```
 
 2. Install boost
@@ -26,7 +27,7 @@ cmake --build .
 
 ## Run
 ```bash
-./AoK -i pytania.txt
+./AoK -i pytania.que
 ```
 
 ## Help

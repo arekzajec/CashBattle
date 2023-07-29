@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <array>
 #include <algorithm>
@@ -12,8 +13,9 @@
 #include "Timer.hpp"
 #include <stack>
 #include <tuple>
+#include "SoundPlayer.hpp"
 
-enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, question, end};
+enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, music_question, question, end};
 enum class ekey {unknown, z, x, c, enter, up, down, t, a, d, p, e, s, u};
 
 class GStateSnap {
@@ -49,7 +51,9 @@ public:
 };
 
 class GEngine : public GStateSnap {
+    SoundPlayerInterface * sound_player;
     std::ofstream & outf;
+    std::string prefix_to_path;
     std::random_device rand_dev;
     std::mt19937 rand_gen;
     std::uniform_int_distribution<int> rand_quest;
@@ -76,9 +80,9 @@ class GEngine : public GStateSnap {
     bool is_questions_set_empty() {return questions_set.size() <= 1;}
     void use_last_snap();
     int end_max_points();
-    GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10);
+    GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, std::string _prefix_to_path = "sound/");
 public:
-    GEngine(std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10);
+    GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;

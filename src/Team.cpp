@@ -18,3 +18,8 @@ bool Team::return_investment (int amount, int other_max) {
     }
     return false;
 }
+
+std::ostream & operator<< (std::ostream & os, const Team & T) {
+    os << T.get_name() << " '" << T.get_color() << "' '" << T.get_hcolor() << "' " << T.get_points();
+    return os;
+}

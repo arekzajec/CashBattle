@@ -1,14 +1,29 @@
 #include "GEngine.hpp"
 #include "Question.hpp"
+#include <chrono>
 #include <fstream>
 #include <ostream>
 #include <string>
+#include <thread>
+#include <boost/algorithm/string.hpp>
+
+std::ostream & operator<<(std::ostream & os, const Question & q) {
+    os << q.get_category() << "; "
+       << q.get_question() << "; "
+       << q.get_answer()   << "; "
+       << q.get_tips()[0]  << "; "
+       << q.get_tips()[1]  << "; "
+       << q.get_tips()[2]  << "; "
+       << q.get_path_to_wav() << "; ";
+    return os;
+}
 
 Question GEngine::read_question(std::ifstream & qfs, int number) {
     std::string category;
     std::string question;
     std::string answer;
     std::array<std::string,3> tips;
+    std::string path_to_wav;
     bool is_used;
     std::getline(qfs,category,';');
     std::getline(qfs,question,';');
@@ -16,9 +31,16 @@ Question GEngine::read_question(std::ifstream & qfs, int number) {
     std::getline(qfs,tips[0],';');
     std::getline(qfs,tips[1],';');
     std::getline(qfs,tips[2],';');
+    std::getline(qfs,path_to_wav,';');
     qfs >> is_used;
     qfs.ignore(1000,'\n');
-    return Question(category,question,answer,tips,is_used,number);
+    boost::algorithm::trim(category);
+    boost::algorithm::trim(question);
+    boost::algorithm::trim(answer);
+    for (auto & x : tips) boost::algorithm::trim(x);
+    boost::algorithm::trim(path_to_wav);
+
+    return Question(category,question,answer,tips,path_to_wav,is_used,number);
 }
 
 GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
@@ -59,7 +81,7 @@ std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3
 }
 
 
-GEngine::GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq) : 
+GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, std::string _prefix_to_path) : 
     GStateSnap(_teams,
                 std::vector<Question>(), //questions_set
                 0, 0, 0, //pot, oldpot, minoldpot
@@ -70,7 +92,9 @@ GEngine::GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2ans
                 false, false, false, //visible : category, question, tips
                 -1, -1 // rand_answ_pos, ind
             ),
+    sound_player(_sound_player),
     outf(_outf),
+    prefix_to_path(_prefix_to_path),
     timer(time2answer)
 {
     rand_gen = std::mt19937(rand_dev());
@@ -78,8 +102,10 @@ GEngine::GEngine(std::ofstream & _outf, std::array<Team,3> _teams, uint time2ans
     rand_tip_to_buy = std::uniform_int_distribution<int>(0,tip_freq-1);
 }
 
-GEngine::GEngine(std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq) : GEngine(_outf,_teams,time2answer,tip_freq) {
-    questions_set.push_back(Question("Podpowiedź","","",{"","",""},false,0));
+GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
+    GEngine(_sound_player,_outf,_teams,time2answer,tip_freq,_prefix_to_path) 
+{
+    questions_set.push_back(Question("Podpowiedź","","",{"","",""},"",false,0));
     for (int i=1;!qf.eof();++i) {
         Question tmp = read_question(qf, i);
         if (!qf) {
@@ -87,10 +113,15 @@ GEngine::GEngine(std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _
             qf.ignore(1000,'\n');
             continue;
         }
+        tmp.add_prefix_to_path(prefix_to_path);
         if (tmp.is_used())
             used_questions_set.push_back(tmp);
-        else
+        else if (!tmp.is_musical_q() || (tmp.is_musical_q() && !exclude_musical))
             questions_set.push_back(tmp);
+        else {
+            tmp.remove_prefix_to_path(prefix_to_path);
+            outf << tmp << tmp.is_used() << ";" << std::endl;
+        }
     }
     rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }
@@ -106,6 +137,8 @@ void GEngine::add_snap() {
 
 void GEngine::use_last_snap() {
     if (!snaps.empty()) {
+        timer.stop();
+        timer.reset();
         std::tie(teams,questions_set,pot,oldpot,minoldpot,maxpoints,
                  active_team_max_points,current_state,active_team,
                  active_team_key,highest_bid,old_highest_bid,
@@ -302,11 +335,25 @@ void GEngine::perform_action(ekey key) {
         };break;
         case state::sold : {
             if (key == ekey::enter) {
+                if (get_current_question().is_musical_q()) {
+                    sound_player->play(get_current_question().get_path_to_wav());
+                    current_state = state::music_question;
+                } else {
                 question_visible = true;
                 timer.run();
                 active_team_max_points = active_team->get_points();
                 current_state = state::question;
+                }
             }
+        };break;
+        case state::music_question : {
+            if (key == ekey::enter) {
+                sound_player->stop();
+                question_visible = true;
+                timer.run();
+                active_team_max_points = active_team->get_points();
+                current_state = state::question;
+            }            
         };break;
         case state::question : {
             if (key == ekey::t) {
@@ -409,22 +456,19 @@ void GEngine::remove_question(int ind) {
         rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }
 
-std::ostream & operator<<(std::ostream & os, const Question & q) {
-    os << q.get_category() << ";"
-       << q.get_question() << ";"
-       << q.get_answer()   << ";"
-       << q.get_tips()[0]  << ";"
-       << q.get_tips()[1]  << ";"
-       << q.get_tips()[2]  << ";";
-    return os;
-}
-
 GEngine::~GEngine() {
     if (current_question_ind > 0 && current_state == state::question)
         remove_question(current_question_ind);
     questions_set.erase(questions_set.begin());
-    for (auto & x : questions_set)
+    for (auto & x : questions_set) {
+        x.remove_prefix_to_path(prefix_to_path);
         outf << x << " 0;" << std::endl;
-    for (auto & x: used_questions_set)
+    }
+    for (auto & x: used_questions_set) {
+        x.remove_prefix_to_path(prefix_to_path);   
         outf << x << " 1;" << std::endl;
+    }
+    std::cout << "-1 " << teams[0] << std::endl;
+    std::cout << "-2 " << teams[1] << std::endl;
+    std::cout << "-3 " << teams[2] << std::endl;
 }
