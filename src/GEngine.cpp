@@ -1,5 +1,6 @@
 #include "GEngine.hpp"
 #include "Question.hpp"
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <ostream>
@@ -14,7 +15,8 @@ std::ostream & operator<<(std::ostream & os, const Question & q) {
        << q.get_tips()[0]  << "; "
        << q.get_tips()[1]  << "; "
        << q.get_tips()[2]  << "; "
-       << q.get_path_to_wav() << "; ";
+       << q.get_path_to_wav() << "; "
+       << q.is_used() << ";";
     return os;
 }
 
@@ -102,7 +104,7 @@ GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, st
     rand_tip_to_buy = std::uniform_int_distribution<int>(0,tip_freq-1);
 }
 
-GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
+GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
     GEngine(_sound_player,_outf,_teams,time2answer,tip_freq,_prefix_to_path) 
 {
     questions_set.push_back(Question("Podpowiedź","","",{"","",""},"",false,0));
@@ -114,15 +116,18 @@ GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::
             continue;
         }
         tmp.add_prefix_to_path(prefix_to_path);
-        if (tmp.is_used())
+        if (tmp.is_used() 
+            || (!Exc.empty() && std::find(Exc.begin(), Exc.end(), tmp.get_category()) != Exc.end())
+            || (exclude_musical && tmp.is_musical_q()))
+        {
             used_questions_set.push_back(tmp);
-        else if (!tmp.is_musical_q() || (tmp.is_musical_q() && !exclude_musical))
-            questions_set.push_back(tmp);
-        else {
-            tmp.remove_prefix_to_path(prefix_to_path);
-            outf << tmp << tmp.is_used() << ";" << std::endl;
         }
+        else if (Inc.empty() || std::find(Inc.begin(), Inc.end(),tmp.get_category()) != Inc.end())
+            questions_set.push_back(tmp);
+        else 
+            used_questions_set.push_back(tmp);
     }
+    std::stable_sort(used_questions_set.begin(),used_questions_set.end(),[&](auto & q1, auto & q2){return static_cast<int>(q1.is_used()) < static_cast<int>(q2.is_used());});
     rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
 }
 
@@ -450,6 +455,7 @@ std::vector<std::string> GEngine::get_all_categories() const {
 }
 
 void GEngine::remove_question(int ind) {
+    questions_set[ind].set_as_used();
     used_questions_set.push_back(questions_set[ind]);
     questions_set.erase(questions_set.begin()+ind);
     if (!is_questions_set_empty())
@@ -462,11 +468,12 @@ GEngine::~GEngine() {
     questions_set.erase(questions_set.begin());
     for (auto & x : questions_set) {
         x.remove_prefix_to_path(prefix_to_path);
-        outf << x << " 0;" << std::endl;
+        outf << x << std::endl;
     }
+    outf << std::endl;
     for (auto & x: used_questions_set) {
         x.remove_prefix_to_path(prefix_to_path);   
-        outf << x << " 1;" << std::endl;
+        outf << x << std::endl;
     }
     std::cout << "-1 " << teams[0] << std::endl;
     std::cout << "-2 " << teams[1] << std::endl;

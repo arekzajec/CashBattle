@@ -45,7 +45,8 @@ public:
             boost::algorithm::replace_first(path_to_wav, prefix, "");
             boost::algorithm::replace_last(path_to_wav, ".wav", "");
         }
-    }    
+    }
+    void set_as_used() {_is_used = true;}
 };
 
 #endif

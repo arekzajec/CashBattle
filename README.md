@@ -34,3 +34,12 @@ cmake --build .
 ```bash
 ./AoK -h
 ```
+
+## `*.que` file description
+Every question should be in separate line described as
+```bash
+category; question; correct_answer; incorrect_answer1; incorrect_answer2; incorrect_answer3; name_of_wav_file; is_used; comment
+```
+`name_of_wav_file` is a path (or part of the path, see option `-P` for common dictionary) to `.wav` file, without extension.
+
+`is_used` is a boolean (`0` or `1`) that indicates if question was used before and will **not** be used again.  

@@ -19,9 +19,9 @@
 
 //TODO:
 //naprawić opcję skalowania interfejsu operatora
-//include/exclude kategorii
-//id pytania i odpowiedzi do pliku
+//id pytania i odpowiedzi do pliku (.md? .tex? .pdf? -- pandoc, skrypt?)
 //rozne opcje formatu pliku pytan (.que, .json) i skrypt pomiedzy nimi
+//lokalizacja
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
 //lepsze ikony dla 'gora' 'dol' 'enter'
 //refaktor:: polepszyć hermetyzacje
@@ -36,18 +36,22 @@ int main(int argc, char* argv[]) {
     //po::options_description desc("Usage:\n" + string(argv[0]) + " -i <questions_file> [ -h ] [ -s scale ] [ -p panel_scale ] [-m]\nArguments");
     po::options_description desc("Usage:\n" + string(argv[0]) + 
                                           " -i <questions_file> [ -h ]" +
-                                          " -o <question_output_file>" + 
+                                          " [ -o <question_output_file> ]" + 
                                           " [ -s scale ] [-m]" +
                                           " [ -t seconds ] [ -f x ]" +
                                           " [ -1 name color hcolor points ]" +
                                           " [ -2 name color hcolor points ]" +
                                           " [ -3 name color hcolor points ]" +
                                           " [ -e ] [ -P path ]" +
+                                          " [ -I list ] [ -E list ]" +
+                                          " [ -d ]" +
                                           "\nArguments");
     try {
         vector<string> blue = {"niebiescy","#19247C","#007FFF","5000"};
         vector<string> green = {"zieloni","#006633","#33CC66","5000"};
         vector<string> yellow = {"żółci","#C0A62C","#F9E04B","5000"};
+        vector<string> Inc;
+        vector<string> Exc;
         desc.add_options()
             ("help,h","displays this message")
             ("questions_file,i",po::value<string>()->value_name("questions_file")->required(),"path to file with questions")
@@ -62,6 +66,9 @@ int main(int argc, char* argv[]) {
             ("team3,3",po::value<vector<string>>()->multitoken()->value_name("name color hcolor points")->default_value(yellow,"yellow '#C0A62C' '#F9E04B' 5000"),"options for team 3:\nsee --team1")
             ("exclude_musical,e","do not import musical question from question set")
             ("path_to_wavs,P",po::value<string>()->value_name("path")->default_value("sounds/"),"path do directory where .wav files for musical questions are")
+            ("include_categories,I",po::value<vector<string>>(&Inc)->multitoken()->value_name("list")->default_value({"All"},"All"),"list of questions categories that game will read from question file.\nAll - all categories.\nexample: -I All\nexample: -I Football \"Classical Music\"")
+            ("exclude_categories,E",po::value<vector<string>>(&Exc)->multitoken()->value_name("list"),"list of questions categories that game will not read from question file.\nWorks only if option -I is not used or set to All\nexample: -E Football \"Classical Music\"\nexample: -I All -E Football \"Classical Music\"")
+            ("dry_run,d","program will not be exacuted, but checking integrity of qeustions set and all filtering operations (-i, -o, -e, -P, -I, -E) will be performed. Also, program will check if all other program parameters are set correctly.")
         ;
         
         po::variables_map vm;
@@ -78,11 +85,14 @@ int main(int argc, char* argv[]) {
         if (vm["tip_freq"].as<uint>() < 2) {
             throw std::runtime_error("tip_freq argument is lesser than 2, game cannot be launched!");
         }
-
         std::ifstream qf(vm["questions_file"].as<string>());
         if (!qf) {
             throw std::runtime_error(vm["questions_file"].as<string>()+" file does not exist!");
         }
+        if (Inc.empty() || std::find(Inc.begin(), Inc.end(), "All") != Inc.end())
+            Inc.clear();
+        if (!Inc.empty())
+            Exc.clear();
         std::ofstream outf(vm["questions_output_file"].as<string>());        
         QApplication app(argc,argv);
         bool is_mirrored = vm.count("mirror");
@@ -91,14 +101,18 @@ int main(int argc, char* argv[]) {
             Team(vm["team2"].as<vector<string>>()),
             Team(vm[is_mirrored ? "team1" : "team3"].as<vector<string>>())
             });
+        double scale = vm["scale"].as<double>();
         SoundPlayer sp;
-        GEngine gengine(&sp, qf,outf,teams,
+        GEngine gengine(&sp, qf,outf,teams,Inc,Exc,
                         vm["answer_time"].as<uint>(),
                         vm["tip_freq"].as<uint>(),
                         vm.count("exclude_musical"),
                         vm["path_to_wavs"].as<string>());
-
-        GameWindow gwindow(gengine,vm["scale"].as<double>(),is_mirrored);
+        if (vm.count("dry_run")) {
+            std::cout << "dry run is completed, check out " + vm["questions_output_file"].as<string>() << std::endl;
+            return 0;
+        }
+        GameWindow gwindow(gengine,scale,is_mirrored);
         gwindow.show();
         //OperatorPanel oppan(&gwindow,&gengine, vm["panel_scale"].as<double>());
         OperatorPanel oppan(&gwindow,&gengine);

@@ -82,7 +82,7 @@ class GEngine : public GStateSnap {
     int end_max_points();
     GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, std::string _prefix_to_path = "sound/");
 public:
-    GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
+    GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;
