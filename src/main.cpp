@@ -20,7 +20,6 @@
 //TODO:
 //naprawić opcję skalowania interfejsu operatora
 //id pytania i odpowiedzi do pliku (.md? .tex? .pdf? -- pandoc, skrypt?)
-//rozne opcje formatu pliku pytan (.que, .json) i skrypt pomiedzy nimi
 //lokalizacja
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
 //lepsze ikony dla 'gora' 'dol' 'enter'
@@ -54,7 +53,7 @@ int main(int argc, char* argv[]) {
         vector<string> Exc;
         desc.add_options()
             ("help,h","displays this message")
-            ("questions_file,i",po::value<string>()->value_name("questions_file")->required(),"path to file with questions")
+            ("questions_file,i",po::value<string>()->value_name("questions_file")->required(),"path to file with questions in .que format")
             ("questions_output_file,o",po::value<string>()->value_name("output_file")->default_value("output.que"),"path to ouptut file.\nOutput file gets info if question was used in this session or not")
             ("scale,s",po::value<double>()->value_name("scale")->default_value(1.0),"scale of game window")
             //("panel_scale,p",po::value<double>()->value_name("scale")->default_value(1.0),"scale of operator window") wyłączony do naprawy

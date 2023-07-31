@@ -1,0 +1,48 @@
+#!/bin/bash
+
+print_help() {
+    echo "transforms `.que` question set into another where all questions are set as unused"
+    echo "Usage: "
+    echo "$0 [ -i file ] [ -o file ] [ -h ]"
+    echo "Arguments:"
+    echo "  -i file       input file, stdin as default"
+    echo "  -o file       output file, stdout as default"
+    echo "  -h            print this message"
+}
+
+in=/dev/stdin
+out=/dev/stdout
+
+while getopts "hi:o:" option; 
+do
+    case ${option} in
+        h) {
+            print_help;
+            exit;
+        };;
+        i) in=$OPTARG;;
+        o) out=$OPTARG;;
+esac
+done
+
+: > $out;
+
+while read line;
+do
+    category=$(echo $line | cut -d ';' -f 1 | sed 's/^[[:space:]]*//g');
+    [ -z "$category" ] && continue;
+    question=$(echo $line | cut -d ';' -f 2 | sed 's/^[[:space:]]*//g' | sed 's/\"/\\\"/g');
+    [ -z "$question" ] && continue;
+    answer=$(echo $line | cut -d ';' -f 3 | sed 's/^[[:space:]]*//g');
+    [ -z "$answer" ] && continue;
+    tip1=$(echo $line | cut -d ';' -f 4 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip1" ] && continue;
+    tip2=$(echo $line | cut -d ';' -f 5 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip2" ] && continue;
+    tip3=$(echo $line | cut -d ';' -f 6 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip3" ] && continue;
+    path=$(echo $line | cut -d ';' -f 7 | sed 's/^[[:space:]]*//g');
+    is_used=$(echo $line | cut -d ';' -f 8 | sed 's/^[[:space:]]*//g');
+    [ -z "$is_used" ] && continue;
+    cat >> $out <<< "$category; $question; $answer; $tip1; $tip2; $tip3; $path; 0;";
+done < $in

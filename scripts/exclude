@@ -1,0 +1,73 @@
+#!/bin/bash
+
+print_help() {
+    echo "transforms `.que` question set into another without specified categories and/or musical questions"
+    echo "Usage: "
+    echo "$0 [ -i file ] [ -o file ] [ -m ] [ -c cat1 ... catN ] [ -h ]"
+    echo "Arguments:"
+    echo "  -i file       input file, stdin as default"
+    echo "  -o file       output file, stdout as default"
+    echo "  -m            exclude musical questions"
+    echo "  -c cat1 ... catN"
+    echo "                categories to exclude"
+    echo "  -h            print this message"
+}
+
+in=/dev/stdin
+out=/dev/stdout
+musical=false
+unset -v categories
+
+while getopts "hi:o:c:m" option; 
+do
+    case ${option} in
+        h) {
+            print_help;
+            exit;
+        };;
+        i) in=$OPTARG;;
+        o) out=$OPTARG;;
+        m) musical=true;;
+        c) categories=("$OPTARG")
+            until [[ "$(eval "echo \${$OPTIND}")" =~ ^-.* ]] || [ -z "$(eval "echo \${$OPTIND}")" ]; do
+                categories+=("$(eval "echo \${$OPTIND}")")
+                OPTIND=$((OPTIND + 1))
+            done
+            ;;           
+esac
+done
+
+: > $out;
+
+while read line;
+do
+    category=$(echo $line | cut -d ';' -f 1 | sed 's/^[[:space:]]*//g');
+    [ -z "$category" ] && continue;
+    question=$(echo $line | cut -d ';' -f 2 | sed 's/^[[:space:]]*//g' | sed 's/\"/\\\"/g');
+    [ -z "$question" ] && continue;
+    answer=$(echo $line | cut -d ';' -f 3 | sed 's/^[[:space:]]*//g');
+    [ -z "$answer" ] && continue;
+    tip1=$(echo $line | cut -d ';' -f 4 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip1" ] && continue;
+    tip2=$(echo $line | cut -d ';' -f 5 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip2" ] && continue;
+    tip3=$(echo $line | cut -d ';' -f 6 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip3" ] && continue;
+    path=$(echo $line | cut -d ';' -f 7 | sed 's/^[[:space:]]*//g');
+    is_used=$(echo $line | cut -d ';' -f 8 | sed 's/^[[:space:]]*//g');
+    [ -z "$is_used" ] && continue;
+    if [ $musical == true -a ! -z $path ];
+    then
+        continue;
+    fi
+    is_excluded=false
+    for x in "${categories[@]}"
+    do
+        if [ "$x" == "$category" ];
+        then
+            is_excluded=true;
+            break;
+        fi
+    done        
+    [ $is_excluded == true ] || cat >> $out <<< "$category; $question; $answer; $tip1; $tip2; $tip3; $path; $is_used;";
+done < $in

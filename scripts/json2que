@@ -1,0 +1,45 @@
+#!/bin/bash
+
+print_help() {
+    echo "transforms `.json` questions set into `.que` question set"
+    echo "Usage: "
+    echo "$0 [ -i file ] [ -o file ] [ -h ]"
+    echo "Arguments:"
+    echo "  -i file       input file, stdin as default"
+    echo "  -o file       output file, stdout as default"
+    echo "  -h            print this message"
+}
+
+in=/dev/stdin
+out=/dev/stdout
+
+while getopts "hi:o:" option; 
+do
+    case ${option} in
+        h) {
+            print_help;
+            exit;
+        };;
+        i) in=$OPTARG;;
+        o) out=$OPTARG;;
+esac
+done
+
+: > $out;
+
+content=$(cat $in);
+
+len=$(echo "$content" | jq '.question_set | length');
+len=$((len-1))
+for i in $(seq 0 $len)
+do
+    cat=$(echo "$content" | jq -r '.question_set['$i'].category');
+    que=$(echo "$content" | jq -r '.question_set['$i'].question');
+    ans=$(echo "$content" | jq -r '.question_set['$i'].correct_answer');
+    ti1=$(echo "$content" | jq -r '.question_set['$i'].incorrect_answer_1');
+    ti2=$(echo "$content" | jq -r '.question_set['$i'].incorrect_answer_2');
+    ti3=$(echo "$content" | jq -r '.question_set['$i'].incorrect_answer_3');
+    pts=$(echo "$content" | jq -r '.question_set['$i'].path_to_sound');
+    ubf=$(echo "$content" | jq -r '.question_set['$i'].used_before');
+    cat >> $out <<< "$cat; $que; $ans; $ti1; $ti2; $ti3; $pts; $ubf;"
+done

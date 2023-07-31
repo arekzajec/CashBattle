@@ -1,0 +1,78 @@
+#!/bin/bash
+
+print_help() {
+    echo "Various informations about .que question set. As default it process only unused questions."
+    echo "Usage: "
+    echo "$0 [ -i file ] [ -o file ] [ -h ] [ -c ] [ -n ] [ -l ] [ -m ] [ -a ]"
+    echo "Arguments:"
+    echo "  -i file       input file, stdin as default"
+    echo "  -o file       output file, stdout as default"
+    echo "  -c            categories"
+    echo "  -n            number of questions"
+    echo "  -l            number of question in each category"
+    echo "  -m            number of musical questions in each category"
+    echo "  -a            process all questions form set"
+    echo "  -h            print this message"
+}
+
+PATH+=":"$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+in=/dev/stdin
+out=/dev/stdout
+cate=false
+num=false
+lcat=false
+music=false
+all=false
+
+while getopts "hi:o:cnlma" option; 
+do
+    case ${option} in
+        h) {
+            print_help;
+            exit;
+        };;
+        i) in=$OPTARG;;
+        o) out=$OPTARG;;
+        c) cate=true;;
+        n) num=true;;
+        l) lcat=true;;
+        m) music=true;;
+        a) all=true;
+esac
+done
+
+content_que=$(cat $in);
+if [ $all == false ];
+then
+    content_que=$(echo "$content_que" | unused);
+fi
+content_json=$(echo "$content_que" | que2json);
+
+if [ $cate = true ];
+then
+    echo "$(echo "$content_json" | jq -r '.question_set[].category' | sort | uniq)";
+fi
+
+if [ $num = true ];
+then
+    echo "$(echo "$content_json" | jq -r '.question_set | length')";
+fi
+
+if [ $lcat = true ];
+then
+    while read x;
+    do
+        echo -n $x ": " | tr -d '"'
+        echo "$(echo "$content_json" | jq -r '.question_set[] | select(.category=='"$x"') | length' | wc -l)";
+    done <<< $(echo "$content_json" | jq '.question_set[].category' | sort | uniq)
+fi
+
+if [ $music = true ];
+then
+    while read x;
+    do
+        echo -n $x ": " | tr -d '"'
+        echo "$(echo "$content_json" | jq -r '.question_set[] | select(.category=='"$x"' and .path_to_sound!="") | length' | wc -l)";
+    done <<< $(echo "$content_json" | jq '.question_set[].category' | sort | uniq)
+fi

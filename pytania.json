@@ -1,0 +1,102 @@
+{   "question_set": [
+    {
+        "category": "Literatura światowa",
+        "question": "Królem jakiego kraju zostaje Makbet, tytułowa postać z dramatu Williama Szekspira?",
+        "correct_answer": "Szkocji",
+        "incorrect_answer_1": "Danii",
+        "incorrect_answer_2": "Anglii",
+        "incorrect_answer_3": "Norwegii",
+        "path_to_sound": "",
+        "used_before": "0"
+    },{
+        "category": "Piłka nożna",
+        "question": "Ile państw azjatyckich było gospodarzem mistrzostw świata w Piłce nożnej mężczyzn, zanim organizację turnieju powierzono Katarowi?",
+        "correct_answer": "2",
+        "incorrect_answer_1": "0",
+        "incorrect_answer_2": "1",
+        "incorrect_answer_3": "3",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Film",
+        "question": "Z jakiego kraju pochodzi aktorka i producentka filmowa, laureatka Oscara, Charlize Theron?",
+        "correct_answer": "RPA",
+        "incorrect_answer_1": "USA",
+        "incorrect_answer_2": "Australia",
+        "incorrect_answer_3": "Szwecja",
+        "path_to_sound": "",
+        "used_before": "0"
+    },{
+        "category": "Architektura",
+        "question": "W jakim stylu architektonicznym powstaje, wznoszona od 1882 roku w Barcelonie, bazylika Sagrada Familia?",
+        "correct_answer": "Secesja",
+        "incorrect_answer_1": "ekspresjonizm",
+        "incorrect_answer_2": "postmodernizm",
+        "incorrect_answer_3": "neogotyk",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Przysłowia",
+        "question": "Która ryba w znanym powiedzeniu wije się zręcznie i sprytnie?",
+        "correct_answer": "piskorz",
+        "incorrect_answer_1": "jesiotr",
+        "incorrect_answer_2": "szczupak",
+        "incorrect_answer_3": "sum",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Światowa muzyka rozrywkowa",
+        "question": "Ilu członków liczył, działający w latach 2013-2022, południowokoreański boys-band BTS?",
+        "correct_answer": "7",
+        "incorrect_answer_1": "5",
+        "incorrect_answer_2": "6",
+        "incorrect_answer_3": "9",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Polska muzyka rozrywkowa",
+        "question": "W którym roku odbył się pierwszy festiwal Pol'and'Rock pod obecną nazwą?",
+        "correct_answer": "2018",
+        "incorrect_answer_1": "2016",
+        "incorrect_answer_2": "2017",
+        "incorrect_answer_3": "2019",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Piłka nożna",
+        "question": "Do którego etapu Mistrzostw Europy we Francji, w 2016, dotarła Reprezentacja Polski w piłce nożnej mężczyzn?",
+        "correct_answer": "Ćwierćfinał",
+        "incorrect_answer_1": "Faza Grupowa",
+        "incorrect_answer_2": "1/8",
+        "incorrect_answer_3": "nie zakwalifikowała się",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Kościoły i religie",
+        "question": "Jaki tytuł przyjmowali następcy Mahometa jako najwyższego kapłana w islamie?",
+        "correct_answer": "kalif",
+        "incorrect_answer_1": "sufi",
+        "incorrect_answer_2": "imam",
+        "incorrect_answer_3": "sułtan",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Matematyka",
+        "question": "W którym wieku Isaak Newton i Gottfried Leibniz odkryli rachunek różniczkowy?",
+        "correct_answer": "17",
+        "incorrect_answer_1": "16",
+        "incorrect_answer_2": "18",
+        "incorrect_answer_3": "19",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Muzyka Klasyczna",
+        "question": "Fragmentem której symfonii Ludwiga van Beethovena jest \"Oda do radości\"?",
+        "correct_answer": "9",
+        "incorrect_answer_1": "7",
+        "incorrect_answer_2": "5",
+        "incorrect_answer_3": "6",
+        "path_to_sound": "sound001",
+        "used_before": "0"
+    }
+]}
