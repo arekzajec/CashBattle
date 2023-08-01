@@ -351,7 +351,7 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double s
     qstatepanel = new QStatePanel(this,font);
     qbuttons = new QButtonDescGroup(this,gengine,font);
     rightlayout = new QVBoxLayout();
-    qlocalgamew = new GameWindow(*gengine, 0.35*scale);
+    qlocalgamew = new GameWindow(*gengine, 0.35*scale, false, true);
     qquest = new OperatorQuestionInfo(this,font);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);

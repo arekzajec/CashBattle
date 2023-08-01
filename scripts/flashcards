@@ -1,0 +1,101 @@
+#!/bin/bash
+
+print_help() {
+    echo "create .pdf file with information about questions"
+    echo "Usage: "
+    echo "$0 [ -i file ] [ -o file ] [ -h ]"
+    echo "Arguments:"
+    echo "  -i file       input file, stdin as default"
+    echo "  -o file       output file, output.pdf as default"
+    echo "  -r rows       number of rows (default 6)"
+    echo "  -c columns    number of columns (default 3)"
+    echo "  -h            print this message"
+}
+
+export TEXINPUTS+=".:"$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"/texsource//:"$TEXINPUTS 
+
+in=/dev/stdin
+out=output.pdf
+rows=6
+columns=3
+
+while getopts "hi:o:" option; 
+do
+    case ${option} in
+        h) {
+            print_help;
+            exit;
+        };;
+        i) in=$OPTARG;;
+        o) out=$OPTARG;;
+        r) rows=$OPTARG;;
+        c) columns=$OPTARG;;
+esac
+done
+
+texfile=$(
+cat << EOF
+\documentclass[frontgrid,letterpaper,12pt]{flacards}
+\usepackage{color}
+\usepackage{etoolbox}
+\usepackage[T1]{fontenc}
+\pretocmd{\card}{\def\curhint{#1}}{}{}
+\pagesetup{$columns}{$rows}
+\renewcommand{\cardtextstylef}{\small}
+\renewcommand{\cardtextstyleb}{\small}
+\renewcommand{\flhead}{\footnotesize\thecardno}
+\renewcommand{\frfoot}{}
+\renewcommand{\brfoot}{}
+\begin{document}
+EOF
+)
+
+while read line;
+do
+    category=$(echo $line | cut -d ';' -f 1 | sed 's/^[[:space:]]*//g');
+    [ -z "$category" ] && continue;
+    question=$(echo $line | cut -d ';' -f 2 | sed 's/^[[:space:]]*//g' | sed 's/\"/\\\"/g');
+    [ -z "$question" ] && continue;
+    answer=$(echo $line | cut -d ';' -f 3 | sed 's/^[[:space:]]*//g');
+    [ -z "$answer" ] && continue;
+    tip1=$(echo $line | cut -d ';' -f 4 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip1" ] && continue;
+    tip2=$(echo $line | cut -d ';' -f 5 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip2" ] && continue;
+    tip3=$(echo $line | cut -d ';' -f 6 | sed 's/^[[:space:]]*//g');
+    [ -z "$tip3" ] && continue;
+    path=$(echo $line | cut -d ';' -f 7 | sed 's/^[[:space:]]*//g');
+    is_used=$(echo $line | cut -d ';' -f 8 | sed 's/^[[:space:]]*//g');
+    [ -z "$is_used" ] && continue;
+    if [ -z "$path" ];
+    then
+        musical=""
+    else
+        musical="(M)"
+    fi
+
+texfile+=$(
+cat << EOF
+
+\card{
+\textit{$category \textbf{$musical}}
+
+$(echo "$question" | sed 's/\\\"/\"/g') 
+
+\textbf{$answer}
+
+$tip1, $tip2, $tip3
+}{.}
+EOF
+)
+done < $in
+
+texfile+=$(
+cat << EOF
+
+\end{document}
+EOF
+)
+
+echo "$texfile" | pdflatex -output-directory=/tmp -jobname=temp
+pdftk /tmp/temp.pdf cat odd output $out

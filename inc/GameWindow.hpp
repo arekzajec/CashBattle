@@ -48,6 +48,7 @@ public:
 class GameWindow : public QWidget {
     const GEngine & gengine;
     std::vector<QString> categories;
+    bool is_question_nr_visible;
 
     QVBoxLayout *qmain_layout;
         QHBoxLayout *qlic_layout;
@@ -66,7 +67,7 @@ class GameWindow : public QWidget {
 
     QTimer *gwtimer;
 public:
-    GameWindow(const GEngine & _gengine, double scale = 1, bool is_mirrored = false);
+    GameWindow(const GEngine & _gengine, double scale = 1, bool is_mirrored = false, bool _is_question_nr_visible = false);
     void refresh();
     void cat_rand_animation();
 };

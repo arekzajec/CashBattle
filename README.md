@@ -20,7 +20,7 @@ sudo apt install libboost-all-dev
 
 3. Install font
 
-On Ubuntu 20.04
+On Ubuntu 22.04
 ```bash
 sudo apt install fonts-dseg
 ```
@@ -57,9 +57,17 @@ All empty lines in `.que` files are ignored. Program use empty line it output fi
 ## Dependencies
 Install `jq`
 
-On Ubuntu 20.04
+On Ubuntu 22.04
 ```bash
 sudo apt install jq
+```
+
+Install `LaTeX` and `pdftk`
+
+On Ubuntu 22.04
+```bash
+sudo apt install texlive-latex-recommended
+sudo apt install pdftk
 ```
 
 ## Scripts
@@ -69,4 +77,5 @@ Can be faund in `scripts/`
 3. `unused` - transforms `.que` question set into another with only unused questions,
 4. `set_as_unused` - transforms `.que` question set into another where all questions are set as unused,
 5. `que2json` - transforms `.que` questions set into `.json` question set,
-6. `json2que` - transforms `.json` questions set into `.que` question set.
+6. `json2que` - transforms `.json` questions set into `.que` question set,
+7. `flashcards` - create `.pdf` file in flashcards style with questions form `.que` question set.

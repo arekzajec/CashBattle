@@ -19,7 +19,6 @@
 
 //TODO:
 //naprawić opcję skalowania interfejsu operatora
-//id pytania i odpowiedzi do pliku (.md? .tex? .pdf? -- pandoc, skrypt?)
 //lokalizacja
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
 //lepsze ikony dla 'gora' 'dol' 'enter'
@@ -43,7 +42,7 @@ int main(int argc, char* argv[]) {
                                           " [ -3 name color hcolor points ]" +
                                           " [ -e ] [ -P path ]" +
                                           " [ -I list ] [ -E list ]" +
-                                          " [ -d ]" +
+                                          " [ -d ] [ -q ]" +
                                           "\nArguments");
     try {
         vector<string> blue = {"niebiescy","#19247C","#007FFF","5000"};
@@ -68,6 +67,7 @@ int main(int argc, char* argv[]) {
             ("include_categories,I",po::value<vector<string>>(&Inc)->multitoken()->value_name("list")->default_value({"All"},"All"),"list of questions categories that game will read from question file.\nAll - all categories.\nexample: -I All\nexample: -I Football \"Classical Music\"")
             ("exclude_categories,E",po::value<vector<string>>(&Exc)->multitoken()->value_name("list"),"list of questions categories that game will not read from question file.\nWorks only if option -I is not used or set to All\nexample: -E Football \"Classical Music\"\nexample: -I All -E Football \"Classical Music\"")
             ("dry_run,d","program will not be exacuted, but checking integrity of qeustions set and all filtering operations (-i, -o, -e, -P, -I, -E) will be performed. Also, program will check if all other program parameters are set correctly.")
+            ("show_question_nr,q","show question number in game window")
         ;
         
         po::variables_map vm;
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
             std::cout << "dry run is completed, check out " + vm["questions_output_file"].as<string>() << std::endl;
             return 0;
         }
-        GameWindow gwindow(gengine,scale,is_mirrored);
+        GameWindow gwindow(gengine,scale,is_mirrored,vm.count("show_question_nr"));
         gwindow.show();
         //OperatorPanel oppan(&gwindow,&gengine, vm["panel_scale"].as<double>());
         OperatorPanel oppan(&gwindow,&gengine);

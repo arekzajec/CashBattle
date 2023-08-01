@@ -83,7 +83,8 @@ void MyQTimeLabel::time_refresh() {
     this->update();
 }
 
-GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored) : gengine(_gengine) {
+GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored, bool _is_question_nr_visible) : 
+    gengine(_gengine), is_question_nr_visible(_is_question_nr_visible) {
     QFontDatabase::addApplicationFont("./font/01 Digit.ttf");
     QFont font("01 Digit",120*scale);
     QFont font2("Arial",50*scale);
@@ -188,9 +189,12 @@ void GameWindow::refresh() {
     qcategory->update();
     if (gengine.is_question_visible()) {
         qquestion->setText(QString::fromStdString(gengine.get_current_question().get_question()));
-        qquestnr->setText(QString::number(gengine.get_current_question().get_id()));
     } else {
         qquestion->clear();
+    }
+    if (gengine.is_category_visible() && is_question_nr_visible) {
+        qquestnr->setText(QString::number(gengine.get_current_question().get_id()));
+    } else {
         qquestnr->clear();
     }
     qquestion->update();
