@@ -50,7 +50,7 @@ QButtonDesc::QButtonDesc(QWidget * parent, QFont font, double scale) : QWidget(p
     qbutton->setMinimumWidth(100*scale);
     qbutton->setMaximumWidth(100*scale);
     qbutton->setMinimumHeight(45*scale);
-    qdesc = new QLabel("tmp",this);
+    qdesc = new QLabel("",this);
     qdesc->setAlignment(Qt::AlignLeft);
     qdesc->setFont(font);
     mainlayout->addWidget(qbutton);
@@ -349,7 +349,7 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double s
 
     mainlayout = new QHBoxLayout(this);
     qstatepanel = new QStatePanel(this,font);
-    qbuttons = new QButtonDescGroup(this,gengine,font);
+    qbuttons = new QButtonDescGroup(this,gengine,font,scale);
     rightlayout = new QVBoxLayout();
     qlocalgamew = new GameWindow(*gengine, 0.35*scale, false, true);
     qquest = new OperatorQuestionInfo(this,font);

@@ -18,7 +18,6 @@
 #include "SoundPlayer.hpp"
 
 //TODO:
-//naprawić opcję skalowania interfejsu operatora
 //lokalizacja
 //ukrywanie opcji 'gora' 'dół' w zależności od tego czy mogą być kilknięte
 //lepsze ikony dla 'gora' 'dol' 'enter'
@@ -35,7 +34,7 @@ int main(int argc, char* argv[]) {
     po::options_description desc("Usage:\n" + string(argv[0]) + 
                                           " -i <questions_file> [ -h ]" +
                                           " [ -o <question_output_file> ]" + 
-                                          " [ -s scale ] [-m]" +
+                                          " [ -s scale ] [ -p scale ] [-m]" +
                                           " [ -t seconds ] [ -f x ]" +
                                           " [ -1 name color hcolor points ]" +
                                           " [ -2 name color hcolor points ]" +
@@ -55,7 +54,7 @@ int main(int argc, char* argv[]) {
             ("questions_file,i",po::value<string>()->value_name("questions_file")->required(),"path to file with questions in .que format")
             ("questions_output_file,o",po::value<string>()->value_name("output_file")->default_value("output.que"),"path to ouptut file.\nOutput file gets info if question was used in this session or not")
             ("scale,s",po::value<double>()->value_name("scale")->default_value(1.0),"scale of game window")
-            //("panel_scale,p",po::value<double>()->value_name("scale")->default_value(1.0),"scale of operator window") wyłączony do naprawy
+            ("panel_scale,p",po::value<double>()->value_name("scale")->default_value(1.0),"scale of operator window")
             ("mirror,m","mirrors team placement in game window")
             ("answer_time,t",po::value<uint>()->value_name("seconds")->default_value(60),"time for team to answer")
             ("tip_freq,f",po::value<uint>()->value_name("x")->default_value(10),"probability of drawing a tip instead of question.\nx - mean draws to happen, for x probability to draw tip equals 1/x")
@@ -101,6 +100,7 @@ int main(int argc, char* argv[]) {
             Team(vm[is_mirrored ? "team1" : "team3"].as<vector<string>>())
             });
         double scale = vm["scale"].as<double>();
+        double panel_scale = vm["panel_scale"].as<double>();
         SoundPlayer sp;
         GEngine gengine(&sp, qf,outf,teams,Inc,Exc,
                         vm["answer_time"].as<uint>(),
@@ -113,8 +113,7 @@ int main(int argc, char* argv[]) {
         }
         GameWindow gwindow(gengine,scale,is_mirrored,vm.count("show_question_nr"));
         gwindow.show();
-        //OperatorPanel oppan(&gwindow,&gengine, vm["panel_scale"].as<double>());
-        OperatorPanel oppan(&gwindow,&gengine);
+        OperatorPanel oppan(&gwindow,&gengine, panel_scale);
         oppan.show();
 
         return app.exec();
