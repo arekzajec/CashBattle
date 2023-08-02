@@ -1,5 +1,7 @@
 ## Roadmap
 
+Current issues and directions for future development
+
 ### Functinal
 
 * tip or blackbox on demand from `Operator Panel`
@@ -9,7 +11,6 @@
 
 ### Graphical
 
-* hide options `up` and `down` when it cannot be clicked in `Operator Panel`
 * better icons for `up`, `down` and `enter` in `Operator Panel`
 * number of displayed teams depends on number participating 
 * more estetical view in `Operator Panel`

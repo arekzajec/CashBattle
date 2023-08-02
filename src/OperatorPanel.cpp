@@ -173,11 +173,18 @@ void QButtonDescGroup::refresh() {
         case state::punishment : {
             setButtonsEnabled({2}); //Enter
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strCategory());
-            if (gengine->get_active_team()) {
-                setButtonsEnabled({0,1}); //Up, Down
-                setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
-                setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
-                ateam = gengine->get_active_team();
+            ateam = gengine->get_active_team();
+            if (ateam) {
+                for (int i=0;i<3;++i) {
+                    if (ateam == &(gengine->get_team(i)) && gengine->get_maxpoints(i) > ateam->get_points()) {
+                        setButtonsEnabled({0}); //Up
+                        setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                    }
+                }
+                if (ateam->get_points()) {
+                    setButtonsEnabled({1}); //Down
+                    setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                }
                 for (int i=0;i<3;++i) {
                     if (ateam != &(gengine->get_team(i)) && gengine->get_team(i).get_points()) {
                         setButtonsEnabled({i+5}); //Z, X, C
@@ -199,19 +206,27 @@ void QButtonDescGroup::refresh() {
             setLabelText(4,loc->strGoTo()+loc->getQStateLoc()->strExtraPot());
         };break;
         case state::extra_pot : {
-            setButtonsEnabled({0,1,2}); //Up, Down, Enter
+            setButtonsEnabled({0,2}); //Up, Enter
+            if (gengine->get_olddpot() > gengine->get_minoldpot()) {
+                setButtonsEnabled({1}); //Down
+                setLabelText(1,loc->strDown100Pot());
+            }
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strLicitationStart());
             setLabelText(0,loc->strUp100Pot());
-            setLabelText(1,loc->strDown100Pot());
         };break;
         case state::tip_buy : {
             setButtonsEnabled({2}); //Enter
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strDeactivated());
-            if (gengine->get_active_team()) {
-                setButtonsEnabled({0,1}); //Up, Down
-                setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
-                setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
-                ateam = gengine->get_active_team();
+            ateam = gengine->get_active_team();
+            if (ateam) {
+                if (ateam->get_points()) {
+                    setButtonsEnabled({0}); //Up
+                    setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                }
+                if (ateam->get_points_invested() > gengine->get_old_highest_bid() + 100) {
+                    setButtonsEnabled({1}); //Down
+                    setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                }
                 if(!gengine->is_any_team_va_banque())
                     licitation_disp(ateam);
             } else {
@@ -233,10 +248,16 @@ void QButtonDescGroup::refresh() {
         };break;
         case state::lic : {
             ateam = gengine->get_active_team();
-            setButtonsEnabled({0,1,2}); //Up, Down, Enter
+            setButtonsEnabled({2}); //Enter
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strSold());
-            setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
-            setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            if (ateam->get_points()) {
+                setButtonsEnabled({0}); //Up
+                setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            }
+            if (ateam->get_points_invested() > gengine->get_old_highest_bid() + 100) {
+                setButtonsEnabled({1}); //Down
+                setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            }
             if (!gengine->is_any_team_va_banque())
                 licitation_disp(ateam);
         };break;
@@ -252,12 +273,22 @@ void QButtonDescGroup::refresh() {
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strQuestion());
         };break;
         case state::question : {
-            setButtonsEnabled({0,1,8,9,10,11}); //Up, Down, A, D, T, S
-            setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
-            setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            ateam = gengine->get_active_team();
+            setButtonsEnabled({8,9,11}); //A, D, S
+            if (ateam->get_points() < gengine->get_active_team_max_point()) {
+                setButtonsEnabled({0}); //Up
+                setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            }
+            if (ateam->get_points()) {
+                setButtonsEnabled({1}); //Down
+                setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            }
             setLabelText(8,loc->strCorrectAnswer());
             setLabelText(9,loc->strIncorrectAnswer());
-            setLabelText(10,loc->strShowTip());
+            if (!gengine->is_tips_visible()) {
+                setButtonsEnabled({10}); //Tip
+                setLabelText(10,loc->strShowTip());
+            }
             if (gengine->is_timer_runnung())
                 setLabelText(11,loc->strStopTime());
             else 

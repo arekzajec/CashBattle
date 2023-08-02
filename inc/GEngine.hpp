@@ -129,6 +129,11 @@ public:
     int get_va_banque_tab_val(int ind) const {return va_banque_tab[ind];}
     bool is_timer_runnung() const {return timer.is_runnung();}
     bool is_any_snap() const {return !snaps.empty();}
+    int get_maxpoints(int ind) const {return maxpoints.at(ind);}
+    int get_olddpot() const {return oldpot;}
+    int get_minoldpot() const {return minoldpot;}
+    int get_old_highest_bid () const {return old_highest_bid;}
+    int get_active_team_max_point() const {return active_team_max_points;}
     virtual ~GEngine();
 };
 
