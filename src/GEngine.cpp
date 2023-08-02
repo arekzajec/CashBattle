@@ -83,7 +83,7 @@ std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3
 }
 
 
-GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, std::string _prefix_to_path) : 
+GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, std::string _prefix_to_path) : 
     GStateSnap(_teams,
                 std::vector<Question>(), //questions_set
                 0, 0, 0, //pot, oldpot, minoldpot
@@ -94,6 +94,7 @@ GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, st
                 false, false, false, //visible : category, question, tips
                 -1, -1 // rand_answ_pos, ind
             ),
+    loc(localization),
     sound_player(_sound_player),
     outf(_outf),
     prefix_to_path(_prefix_to_path),
@@ -104,10 +105,10 @@ GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, st
     rand_tip_to_buy = std::uniform_int_distribution<int>(0,tip_freq-1);
 }
 
-GEngine::GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
-    GEngine(_sound_player,_outf,_teams,time2answer,tip_freq,_prefix_to_path) 
+GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
+    GEngine(localization,_sound_player,_outf,_teams,time2answer,tip_freq,_prefix_to_path) 
 {
-    questions_set.push_back(Question("Podpowiedź","","",{"","",""},"",false,0));
+    questions_set.push_back(Question(loc->strTip(),"","",{"","",""},"",false,0));
     for (int i=1;!qf.eof();++i) {
         Question tmp = read_question(qf, i);
         if (!qf) {

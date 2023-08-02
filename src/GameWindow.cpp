@@ -1,6 +1,6 @@
 #include "GameWindow.hpp"
 
-QTeam::QTeam(QWidget * _parent, const Team & _team, 
+QTeam::QTeam(QWidget * _parent, QTeamLocInterface * loc, const Team & _team, 
       QFont _font_num, QFont _font_char) : 
     QWidget(_parent), 
     team(_team), 
@@ -12,7 +12,7 @@ QTeam::QTeam(QWidget * _parent, const Team & _team,
         qpoints_invested->setAlignment(Qt::AlignCenter);
         qpoints_invested->setFont(font_num);
     qteam_layout->addWidget(qpoints_invested, Qt::AlignCenter);
-        qaccount_string = new QLabel(QString("STAN KONTA"));
+        qaccount_string = new QLabel(loc->strAccount());
         qaccount_string->setAlignment(Qt::AlignCenter);
         qaccount_string->setFont(font_char);
     qteam_layout->addWidget(qaccount_string, Qt::AlignCenter);
@@ -83,23 +83,23 @@ void MyQTimeLabel::time_refresh() {
     this->update();
 }
 
-GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored, bool _is_question_nr_visible) : 
-    gengine(_gengine), is_question_nr_visible(_is_question_nr_visible) {
+GameWindow::GameWindow(GameWindowLocInterface * localization, const GEngine & _gengine, double scale, bool is_mirrored, bool _is_question_nr_visible) : 
+    loc(localization), gengine(_gengine), is_question_nr_visible(_is_question_nr_visible) {
     QFontDatabase::addApplicationFont("./font/01 Digit.ttf");
     QFont font("01 Digit",120*scale);
     QFont font2("Arial",50*scale);
     QFont font3("01 Digit",50*scale);
 
-    this->setWindowTitle("Awantura o Kasę");
+    this->setWindowTitle(loc->strTitle());
     this->setStyleSheet("QWidget { background-color : black;}");
     qmain_layout = new QVBoxLayout(this);
         qlic_layout = new QHBoxLayout();
-            qlic = new QLabel(QString("LICYTACJA"),this);
+            qlic = new QLabel(QString(loc->strLicitation()),this);
             qlic->setAlignment(Qt::AlignCenter);
             qlic->setStyleSheet("QLabel { background-color : black; color : white; }");
             qlic->setFont(font2);
         qlic_layout->addWidget(qlic);
-            qtimestr = new QLabel(QString("CZAS"),this);
+            qtimestr = new QLabel(QString(loc->strTime()),this);
             qtimestr->setFont(font2);
             qtimestr->setStyleSheet("QLabel { background-color : black; color : white; }");
             qtimestr->setAlignment(Qt::AlignCenter);
@@ -109,7 +109,7 @@ GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored,
     qmain_layout->addLayout(qlic_layout);
         qteams_layout = new QHBoxLayout();
             for (int i=0;i<3;++i)
-                qteam[i] = new QTeam(this,gengine.get_team(i),font,font2);
+                qteam[i] = new QTeam(this,loc->getQTeamLoc(), gengine.get_team(i),font,font2);
             if (is_mirrored)
                 for (int i=2;i>=0;--i)
                     qteams_layout->addWidget(qteam[i]);
@@ -129,7 +129,7 @@ GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored,
                 QObject::connect(gwtimer,&QTimer::timeout,
                                  qtimer,&MyQTimeLabel::time_refresh);
             qpot_layout->addWidget(qtimer);
-                qpot_str = new QLabel(QString("PULA"),this);
+                qpot_str = new QLabel(QString(loc->strPot()),this);
                 qpot_str->setStyleSheet("QLabel {background-color : black; color : white; }");
                 qpot_str->setFont(font2);
                 qpot_str->setAlignment(Qt::AlignCenter);
@@ -164,7 +164,7 @@ GameWindow::GameWindow(const GEngine & _gengine, double scale, bool is_mirrored,
         qquestnr = new QLabel(this);
         qquestnr->setAlignment(Qt::AlignRight);
         qquestnr->setStyleSheet("QLabel { background-color : black; color : white; }");
-        qquestnr->setFont(QFont("Arial",8)); 
+        qquestnr->setFont(QFont("Arial",8*scale)); 
     qmain_layout->addWidget(qquestnr);
     qmain_layout->setStretch(0,1);
     qmain_layout->setStretch(1,5);

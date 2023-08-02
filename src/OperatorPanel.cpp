@@ -7,21 +7,21 @@ QLabel * QStatePanel::newQLabel(QString str, QFont font) {
     return ans;
 }
 
-QStatePanel::QStatePanel (QWidget * parent,QFont font) : QWidget(parent) {
+QStatePanel::QStatePanel (QWidget * parent,QStatePanelLocInterface * loc, QFont font) : QWidget(parent) {
     mainlayout = new QVBoxLayout(this);
-    qstates.push_back(newQLabel(QString("Stan"),font));
-    qstates.push_back(newQLabel(QString("nieaktywny"),font));
-    qstates.push_back(newQLabel(QString("kara"),font));
-    qstates.push_back(newQLabel(QString("kategoria"),font));
-    qstates.push_back(newQLabel(QString("ekstra pula"),font));
-    qstates.push_back(newQLabel(QString("podpowiedź"),font));
-    qstates.push_back(newQLabel(QString("licytacja - start"),font));
-    qstates.push_back(newQLabel(QString("licytacja"),font));
-    qstates.push_back(newQLabel(QString("licytacja - blokada"),font));
-    qstates.push_back(newQLabel(QString("sprzedane"),font));
-    qstates.push_back(newQLabel(QString("pytanie muzyczne"),font));
-    qstates.push_back(newQLabel(QString("pytanie"),font));
-    qstates.push_back(newQLabel(QString("koniec"),font));
+    qstates.push_back(newQLabel(loc->strState(),font));
+    qstates.push_back(newQLabel(loc->strDeactivated(),font));
+    qstates.push_back(newQLabel(loc->strPunishment(),font));
+    qstates.push_back(newQLabel(loc->strCategory(),font));
+    qstates.push_back(newQLabel(loc->strExtraPot(),font));
+    qstates.push_back(newQLabel(loc->strTip(),font));
+    qstates.push_back(newQLabel(loc->strLicitationStart(),font));
+    qstates.push_back(newQLabel(loc->strLicitation(),font));
+    qstates.push_back(newQLabel(loc->strLicitationBlock(),font));
+    qstates.push_back(newQLabel(loc->strSold(),font));
+    qstates.push_back(newQLabel(loc->strMusical(),font));
+    qstates.push_back(newQLabel(loc->strQuestion(),font));
+    qstates.push_back(newQLabel(loc->strEnd(),font));
     for(auto & x : qstates)
         mainlayout->addWidget(x);
 }
@@ -73,7 +73,7 @@ void QButtonDesc::refresh() {
     qdesc->update();
 }
 
-QButtonDescGroup::QButtonDescGroup(QWidget * parent, GEngine * _gengine, QFont font, double scale) : QWidget(parent), gengine(_gengine) {
+QButtonDescGroup::QButtonDescGroup(QWidget * parent, QButtonDescGroupLocInterface * localization, GEngine * _gengine, QFont font, double scale) : QWidget(parent), loc(localization), gengine(_gengine) {
     mainlayout = new QVBoxLayout(this);
     qdesc = new QLabel("Przyciski");
     qdesc->setAlignment(Qt::AlignCenter);
@@ -141,19 +141,19 @@ void QButtonDescGroup::licitation_disp(Team * ateam) {
         if (ateam == &(gengine->get_team(i))) {
             setButtonsEnabled({i+5}); //Z, X, C
             if (ateam->va_banque_val() == gengine->get_va_banque_tab_val(0))
-                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+" va banque!");
+                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+ loc->strVaBanque());
             else if (ateam->get_points_invested() > gengine->get_va_banque_tab_val(0) &&
                      ateam->va_banque_val() == gengine->get_va_banque_tab_val(1))
-                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+" va banque!");
+                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+ loc->strVaBanque());
             else if (ateam->get_points_invested() >= gengine->get_va_banque_tab_val(1))
-                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+" va banque!");
+                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+ loc->strVaBanque());
             else
-                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+" blokują przeciwników!");
+                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+ loc->strBlocks());
         } else {
             if (gengine->get_team(i).va_banque_val() > ateam->get_points_invested() && 
                 ateam->get_points_invested() != ateam->va_banque_val()) {
                 setButtonsEnabled({i+5}); //Z, X, C
-                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name()) + " licytują!");
+                setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name()) + loc->strLeads());
             }
         }
     }
@@ -167,50 +167,50 @@ void QButtonDescGroup::refresh() {
     switch (cs) {
         case state::idle : {
             setButtonsEnabled({2,3}); //Enter, P
-            setLabelText(2,"przejdź do: kategoria");
-            setLabelText(3,"przejdź do: kara");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strCategory());
+            setLabelText(3,loc->strGoTo()+loc->getQStateLoc()->strPunishment());
         };break;
         case state::punishment : {
             setButtonsEnabled({2}); //Enter
-            setLabelText(2,"przejdź do: kategoria");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strCategory());
             if (gengine->get_active_team()) {
                 setButtonsEnabled({0,1}); //Up, Down
-                setLabelText(0,"zwróć 100 drużynie: " + QString::fromStdString(gengine->get_active_team()->get_name()));
-                setLabelText(1,"odbierz 100 drużynie: " + QString::fromStdString(gengine->get_active_team()->get_name()));
+                setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
                 ateam = gengine->get_active_team();
                 for (int i=0;i<3;++i) {
                     if (ateam != &(gengine->get_team(i)) && gengine->get_team(i).get_points()) {
                         setButtonsEnabled({i+5}); //Z, X, C
-                        setLabelText(i+5,"wybierz drużynę: " + QString::fromStdString(gengine->get_team(i).get_name()));
+                        setLabelText(i+5,loc->strPickTeam() + QString::fromStdString(gengine->get_team(i).get_name()));
                     }
                 }
             } else {
                 for (int i=0;i<3;++i) {
                     if (gengine->get_team(i).get_points()) {
                         setButtonsEnabled({i+5}); //Z, X, C
-                        setLabelText(i+5,"wybierz drużynę: " + QString::fromStdString(gengine->get_team(i).get_name()));
+                        setLabelText(i+5,loc->strPickTeam() + QString::fromStdString(gengine->get_team(i).get_name()));
                     }
                 }
             }
         };break;
         case state::category : {
             setButtonsEnabled({2,4}); //Enter, E
-            setLabelText(2,"przejdź do: licytacja - start");
-            setLabelText(4,"przejdź do: ekstra pula");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strLicitationStart());
+            setLabelText(4,loc->strGoTo()+loc->getQStateLoc()->strExtraPot());
         };break;
         case state::extra_pot : {
             setButtonsEnabled({0,1,2}); //Up, Down, Enter
-            setLabelText(2,"przejdź do: licytacja - start");
-            setLabelText(0,"dodaj 100 do puli");
-            setLabelText(1,"zabierz 100 z puli");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strLicitationStart());
+            setLabelText(0,loc->strUp100Pot());
+            setLabelText(1,loc->strDown100Pot());
         };break;
         case state::tip_buy : {
             setButtonsEnabled({2}); //Enter
-            setLabelText(2,"przejdź do: nieaktywny");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strDeactivated());
             if (gengine->get_active_team()) {
                 setButtonsEnabled({0,1}); //Up, Down
-                setLabelText(0,"zwiększ o 100 kwotę drużyny: " + QString::fromStdString(gengine->get_active_team()->get_name()));
-                setLabelText(1,"zmniejsz o 100 kwotę drużyny: " + QString::fromStdString(gengine->get_active_team()->get_name()));
+                setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+                setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
                 ateam = gengine->get_active_team();
                 if(!gengine->is_any_team_va_banque())
                     licitation_disp(ateam);
@@ -218,7 +218,7 @@ void QButtonDescGroup::refresh() {
                 for (int i=0;i<3;++i) {
                     if (gengine->get_team(i).get_points()) {
                         setButtonsEnabled({5,6,7}); //Z, X, C
-                        setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name()) + " licytują!");
+                        setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name()) + loc->strLeads());
                     }
                 }
             }
@@ -227,53 +227,54 @@ void QButtonDescGroup::refresh() {
             for (int i=0;i<3;++i) {
                 if (gengine->get_team(i).va_banque_val() > 200) {
                     setButtonsEnabled({i+5}); //Z, X, C
-                    setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+" licytują!");
+                    setLabelText(i+5,QString::fromStdString(gengine->get_team(i).get_name())+ loc->strLeads());
                 }
             }
         };break;
         case state::lic : {
             ateam = gengine->get_active_team();
             setButtonsEnabled({0,1,2}); //Up, Down, Enter
-            setLabelText(2,"przejdź do: sprzedano");
-            setLabelText(0,"zwiększ o 100 kwotę drużyny: " + QString::fromStdString(gengine->get_active_team()->get_name()));
-            setLabelText(1,"zmniejsz o 100 kwotę drużyny: " + QString::fromStdString(gengine->get_active_team()->get_name()));
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strSold());
+            setLabelText(0,loc->strUp100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            setLabelText(1,loc->strDown100TeamLic() + QString::fromStdString(gengine->get_active_team()->get_name()));
             if (!gengine->is_any_team_va_banque())
                 licitation_disp(ateam);
         };break;
         case state::sold : {
             setButtonsEnabled({2}); //Enter
             if (gengine->get_current_question().is_musical_q())
-                setLabelText(2,"przejdź do: pytanie muzyczne");
+                setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strMusical());
             else
-                setLabelText(2,"przejdź do: pytanie");
+                setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strQuestion());
         };break;
         case state::music_question : {
             setButtonsEnabled({2}); //Enter
-            setLabelText(2,"przejdź do: pytanie");
+            setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strQuestion());
         };break;
         case state::question : {
             setButtonsEnabled({0,1,8,9,10,11}); //Up, Down, A, D, T, S
-            setLabelText(0,"zwróć 100 drużynie: " + QString::fromStdString(gengine->get_active_team()->get_name()));
-            setLabelText(1,"odbierz 100 drużynie: " + QString::fromStdString(gengine->get_active_team()->get_name()));
-            setLabelText(8,"odpowiedź poprawna");
-            setLabelText(9,"odpowiedź błędna");
-            setLabelText(10,"pokaż podpowiedź");
+            setLabelText(0,loc->strUp100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            setLabelText(1,loc->strDown100Team() + QString::fromStdString(gengine->get_active_team()->get_name()));
+            setLabelText(8,loc->strCorrectAnswer());
+            setLabelText(9,loc->strIncorrectAnswer());
+            setLabelText(10,loc->strShowTip());
             if (gengine->is_timer_runnung())
-                setLabelText(11,"stop czas odpowiedzi");
+                setLabelText(11,loc->strStopTime());
             else 
-                setLabelText(11,"start czas odpowiedzi");
+                setLabelText(11,loc->strStartTime());
         };break;
     }
     if (gengine->is_any_snap()) {
         setButtonsEnabled({12});
-        setLabelText(12,"Cofnij");
+        setLabelText(12,loc->strUndo());
     }
     for (auto & x : qbuttons) {
         x->refresh();
     }
 }
 
-OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidget(parent) {
+OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, QFont font) : 
+    QWidget(parent), loc(localization) {
     layout = new QVBoxLayout(this);
     ismusic = new QLabel(this);
     ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
@@ -321,10 +322,10 @@ OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, QFont font) : QWidg
 
 void OperatorQuestionInfo::replace_question(const Question & q) {
     if (q.is_musical_q()) {
-        ismusic->setText(QString("Pytanie muzyczne"));
+        ismusic->setText(loc->strMusical());
         ismusic->setStyleSheet("QLabel {background-color : orange; color : black; }");
     } else {
-        ismusic->setText(QString("Pytanie zwykłe"));
+        ismusic->setText(loc->strRegular());
         ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
     }
     qquestion->setText(QString::fromStdString(q.get_question()));
@@ -339,7 +340,8 @@ void OperatorQuestionInfo::replace_question(const Question & q) {
     qtip3->update();
 }
 
-OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double scale) : 
+OperatorPanel::OperatorPanel(OperatorPanelLocInterface * localization, GameWindow * _gwindow, GEngine * _gengine, double scale) : 
+        loc(localization),
         gwindow(_gwindow), 
         gengine(_gengine) 
 {
@@ -348,11 +350,11 @@ OperatorPanel::OperatorPanel(GameWindow * _gwindow, GEngine * _gengine, double s
     QFont font("Arial",20*scale);
 
     mainlayout = new QHBoxLayout(this);
-    qstatepanel = new QStatePanel(this,font);
-    qbuttons = new QButtonDescGroup(this,gengine,font,scale);
+    qstatepanel = new QStatePanel(this,loc->getQStateLoc(),font);
+    qbuttons = new QButtonDescGroup(this,loc->getQButtonLoc(),gengine,font,scale);
     rightlayout = new QVBoxLayout();
-    qlocalgamew = new GameWindow(*gengine, 0.35*scale, false, true);
-    qquest = new OperatorQuestionInfo(this,font);
+    qlocalgamew = new GameWindow(loc->getGameWinLoc(),*gengine, 0.35*scale, false, true);
+    qquest = new OperatorQuestionInfo(this,loc->getOperQInfLoc(),font);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);
     mainlayout->addLayout(rightlayout);

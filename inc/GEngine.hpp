@@ -18,6 +18,22 @@
 enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, music_question, question, end};
 enum class ekey {unknown, z, x, c, enter, up, down, t, a, d, p, e, s, u};
 
+class GEngineLocInterface {
+    public:
+    virtual std::string strTip() = 0;
+};
+
+class GEngineLocPL : public GEngineLocInterface {
+    public:
+    std::string strTip() {return "Podpowiedź";}
+};
+
+class GEngineLocEN : public GEngineLocInterface {
+    public:
+    std::string strTip() {return "Tip";}
+};
+
+
 class GStateSnap {
 protected:
     std::array<Team,3> teams;
@@ -51,6 +67,7 @@ public:
 };
 
 class GEngine : public GStateSnap {
+    GEngineLocInterface * loc;
     SoundPlayerInterface * sound_player;
     std::ofstream & outf;
     std::string prefix_to_path;
@@ -80,9 +97,9 @@ class GEngine : public GStateSnap {
     bool is_questions_set_empty() {return questions_set.size() <= 1;}
     void use_last_snap();
     int end_max_points();
-    GEngine(SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, std::string _prefix_to_path = "sound/");
+    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, std::string _prefix_to_path = "sound/");
 public:
-    GEngine(SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
+    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;

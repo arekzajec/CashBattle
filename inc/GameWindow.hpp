@@ -12,6 +12,51 @@
 #include <vector>
 #include <random>
 
+class QTeamLocInterface {
+    public:
+    virtual QString strAccount() = 0;
+};
+
+class QTeamLocPL : public QTeamLocInterface {
+    public:
+    QString strAccount() {return "STAN KONTA";}
+};
+
+class QTeamLocEN : public QTeamLocInterface {
+    public:
+    QString strAccount() {return "ACCOUNT";}
+};
+
+
+class GameWindowLocInterface {
+    protected:
+    QTeamLocInterface * qteam;
+    public:
+    virtual QString strTitle() = 0;
+    virtual QString strLicitation() = 0;
+    virtual QString strTime() = 0;
+    virtual QString strPot() = 0;
+    QTeamLocInterface * getQTeamLoc() {return qteam;}
+};
+
+class GameWindowLocPL : public GameWindowLocInterface {
+    public:
+    GameWindowLocPL() {qteam = new QTeamLocPL;}
+    QString strTitle() {return "Awantura o Kasę";}
+    QString strLicitation() {return "LICYTACJA";}
+    QString strTime() {return "CZAS";}
+    QString strPot() {return "PULA";}
+};
+
+class GameWindowLocEN : public GameWindowLocInterface {
+    public:
+    GameWindowLocEN() {qteam = new QTeamLocEN;}
+    QString strTitle() {return "Cash Battle";}
+    QString strLicitation() {return "LICITATION";}
+    QString strTime() {return "TIME";}
+    QString strPot() {return "POT";}
+};
+
 class QTeam : public QWidget {
     const Team & team;
     QVBoxLayout *qteam_layout;
@@ -21,7 +66,7 @@ class QTeam : public QWidget {
     QFont font_num;
     QFont font_char;
 public:
-    QTeam(QWidget * _parent, const Team & _team, 
+    QTeam(QWidget * _parent, QTeamLocInterface * loc, const Team & _team, 
           QFont _font_num, QFont _font_char);
     void refresh();
 };
@@ -46,6 +91,7 @@ public:
 };
 
 class GameWindow : public QWidget {
+    GameWindowLocInterface * loc;
     const GEngine & gengine;
     std::vector<QString> categories;
     bool is_question_nr_visible;
@@ -67,7 +113,7 @@ class GameWindow : public QWidget {
 
     QTimer *gwtimer;
 public:
-    GameWindow(const GEngine & _gengine, double scale = 1, bool is_mirrored = false, bool _is_question_nr_visible = false);
+    GameWindow(GameWindowLocInterface * localization, const GEngine & _gengine, double scale = 1, bool is_mirrored = false, bool _is_question_nr_visible = false);
     void refresh();
     void cat_rand_animation();
 };
