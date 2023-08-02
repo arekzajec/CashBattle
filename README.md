@@ -50,7 +50,7 @@ category; question; correct_answer; incorrect_answer1; incorrect_answer2; incorr
 
 `is_used` is a boolean (`0` or `1`) that indicates if question was used before and will **not** be used again.
 
-All empty lines in `.que` files are ignored. Program use empty line it output file to separate yet-to-use questions from used or sfiltered out questions. However, for correct conversion to `.json` using `scripts/que2json` `.que` file must be ended by newline.
+All empty lines in `.que` files are ignored. Program use empty line in output file to separate yet-to-use questions from used or filtered out questions. However, for correct conversion to `.json` using `scripts/que2json` `.que` file must be ended by newline.
 
 # Additional scripts
 
@@ -71,7 +71,7 @@ sudo apt install pdftk
 ```
 
 ## Scripts
-Can be faund in `scripts/`
+Can be found in `scripts/`
 1. `info` - gets information about `.que` question set, i.e. categories, number of questions, etc.
 2. `exclude` - transforms `.que` question set into another without specified categories and/or musical questions,
 3. `unused` - transforms `.que` question set into another with only unused questions,
