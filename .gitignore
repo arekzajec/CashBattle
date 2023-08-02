@@ -32,9 +32,11 @@
 *.app
 
 # Project-related
-AoK*
+CashBattle*
 CMakeCache.txt
 CMakeFiles
 Makefile
 moc*_parameters
 cmake_install.cmake
+.cache
+compile_commands.json

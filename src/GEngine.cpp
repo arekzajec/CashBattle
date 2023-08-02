@@ -50,7 +50,7 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questio
             int _active_team_max_points, state _current_state, Team * _active_team,
             ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
             int _current_question_ind, bool _category_visible, bool _question_visible,
-            bool _tips_visible, int _rand_answ_pos, int _ind) :
+            bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count) :
     teams(_teams),
     questions_set(_questions_set),
     pot(_pot),
@@ -68,22 +68,25 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questio
     question_visible(_question_visible),
     tips_visible(_tips_visible),
     rand_answ_pos(_rand_answ_pos),
-    ind(_ind)
+    ind(_ind),
+    blackbox_count(_blackbox_count)
 {}
 
 std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
-           int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int> GStateSnap::get_data() 
+           int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int> GStateSnap::get_data() 
 {
     return std::make_tuple(teams,questions_set,pot,oldpot,minoldpot,maxpoints,
                  active_team_max_points,current_state,active_team,
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
                  question_visible,tips_visible,
-                 rand_answ_pos,ind);
+                 rand_answ_pos,ind,blackbox_count);
 }
 
 
-GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer, uint tip_freq, std::string _prefix_to_path) : 
+GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, 
+                 std::array<Team,3> _teams, uint time2answer, uint tip_freq, std::vector<int> blackb, 
+                 std::string _prefix_to_path) : 
     GStateSnap(_teams,
                 std::vector<Question>(), //questions_set
                 0, 0, 0, //pot, oldpot, minoldpot
@@ -92,21 +95,27 @@ GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sou
                 nullptr, ekey::unknown, //active_team, active_team_key
                 0, 0, -1, //highest_bid, old_highest_bid, current_question_ind
                 false, false, false, //visible : category, question, tips
-                -1, -1 // rand_answ_pos, ind
+                -1, -1, blackb[0] // rand_answ_pos, ind, blackbox_count
             ),
     loc(localization),
     sound_player(_sound_player),
     outf(_outf),
     prefix_to_path(_prefix_to_path),
+    tip_buy_tresh(tip_freq),
+    bb_buy_tresh(blackb[1]),
+    tbq(-1),
     timer(time2answer)
 {
     rand_gen = std::mt19937(rand_dev());
     rand_tip = std::uniform_int_distribution<int>(0,3);
-    rand_tip_to_buy = std::uniform_int_distribution<int>(0,tip_freq-1);
+    rand_tip_bb_to_buy = std::uniform_real_distribution<double>(0,100);
 }
 
-GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer, uint tip_freq, bool exclude_musical, std::string _prefix_to_path) : 
-    GEngine(localization,_sound_player,_outf,_teams,time2answer,tip_freq,_prefix_to_path) 
+GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, 
+                 std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, 
+                 std::vector<std::string> Exc, uint time2answer, uint tip_freq, std::vector<int> blackb, 
+                 bool exclude_musical, std::string _prefix_to_path) : 
+    GEngine(localization,_sound_player,_outf,_teams,time2answer,tip_freq,blackb,_prefix_to_path) 
 {
     questions_set.push_back(Question(loc->strTip(),"","",{"","",""},"",false,0));
     for (int i=1;!qf.eof();++i) {
@@ -138,7 +147,7 @@ void GEngine::add_snap() {
                           active_team,active_team_key,highest_bid,
                           old_highest_bid,current_question_ind,
                           category_visible,question_visible,tips_visible,
-                          rand_answ_pos,ind));
+                          rand_answ_pos,ind,blackbox_count));
 }
 
 void GEngine::use_last_snap() {
@@ -150,7 +159,8 @@ void GEngine::use_last_snap() {
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
                  question_visible,tips_visible,
-                 rand_answ_pos,ind) = snaps.top().get_data();
+                 rand_answ_pos,ind,blackbox_count) = snaps.top().get_data();
+        rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
         snaps.pop();
     }
 }
@@ -243,8 +253,15 @@ void GEngine::perform_action(ekey key) {
             }
             if (key == ekey::enter) {
                 category_visible = true;
-                if(is_tip_to_buy()) {
+                tbq = tip_bb_question();
+                if(tbq == 1) {
                     current_question_ind = 0;
+                    questions_set[0] = Question(loc->strTip(),"","",{"","",""},"",false,0);
+                    current_state = state::tip_buy;
+                } else if (tbq == 2 && blackbox_count > 0) {
+                    current_question_ind = 0;
+                    questions_set[0] = Question(loc->strBlackBox(),"","",{"","",""},"",false,0);
+                    blackbox_count--;
                     current_state = state::tip_buy;
                 }
                 else {
@@ -276,8 +293,15 @@ void GEngine::perform_action(ekey key) {
             }
             if (key == ekey::enter) {
                 category_visible = true;
-                if(is_tip_to_buy()) {
+                tbq = tip_bb_question();
+                if(tbq == 1) {
                     current_question_ind = 0;
+                    questions_set[0] = Question(loc->strTip(),"","",{"","",""},"",false,0);
+                    current_state = state::tip_buy;
+                } else if (tbq == 2 && blackbox_count > 0) {
+                    current_question_ind = 0;
+                    questions_set[0] = Question(loc->strBlackBox(),"","",{"","",""},"",false,0);
+                    blackbox_count--;
                     current_state = state::tip_buy;
                 }
                 else {
@@ -428,6 +452,16 @@ std::array<std::string,4> GEngine::get_tips() const {
     return ans;
 }
 
+int GEngine::tip_bb_question() {
+    double num = rand_tip_bb_to_buy(rand_gen);
+    if (num < tip_buy_tresh)
+        return 1;
+    else if (num < tip_buy_tresh+bb_buy_tresh)
+        return 2;
+    else
+        return 0;
+}
+
 void GEngine::reset_vars() {
     active_team = nullptr;
     active_team_key = ekey::unknown;
@@ -439,6 +473,7 @@ void GEngine::reset_vars() {
     current_question_ind = -1;
     rand_answ_pos = -1;
     highest_bid = 0;
+    tbq = -1;
     timer.stop();
     timer.reset();
     for (auto & x : teams) {

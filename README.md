@@ -33,12 +33,12 @@ cmake --build .
 
 ## Run
 ```bash
-./AoK -i pytania.que
+./CashBattle -i pytania.que
 ```
 
 ## Help
 ```bash
-./AoK -h
+./CashBattle -h
 ```
 
 ## `*.que` file description

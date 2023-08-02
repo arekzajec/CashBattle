@@ -21,16 +21,19 @@ enum class ekey {unknown, z, x, c, enter, up, down, t, a, d, p, e, s, u};
 class GEngineLocInterface {
     public:
     virtual std::string strTip() = 0;
+    virtual std::string strBlackBox() = 0;
 };
 
 class GEngineLocPL : public GEngineLocInterface {
     public:
     std::string strTip() {return "Podpowiedź";}
+    std::string strBlackBox() {return "Czarna skrzynka";}
 };
 
 class GEngineLocEN : public GEngineLocInterface {
     public:
     std::string strTip() {return "Tip";}
+    std::string strBlackBox() {return "Black box";}
 };
 
 
@@ -55,15 +58,16 @@ protected:
     bool tips_visible;
     int rand_answ_pos;
     int ind;
+    int blackbox_count;
 public:
     GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
                int _pot, int _oldpot, int _minoldpot, std::array<int,3> _maxpoints,
                int _active_team_max_points, state _current_state, Team * _active_team,
                ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
                int _current_question_ind, bool _category_visible, bool _question_visible,
-               bool _tips_visible, int _rand_answ_pos, int _ind);
+               bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count);
     std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
-               int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int> get_data();
+               int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int> get_data();
 };
 
 class GEngine : public GStateSnap {
@@ -75,7 +79,10 @@ class GEngine : public GStateSnap {
     std::mt19937 rand_gen;
     std::uniform_int_distribution<int> rand_quest;
     std::uniform_int_distribution<int> rand_tip;
-    std::uniform_int_distribution<int> rand_tip_to_buy;
+    std::uniform_real_distribution<double> rand_tip_bb_to_buy;
+    int tip_buy_tresh;
+    int bb_buy_tresh;
+    int tbq;
     Timer timer;
 
     std::array<int,3> va_banque_tab;
@@ -88,7 +95,7 @@ class GEngine : public GStateSnap {
     bool chooseActiveTeam(ekey key);
     int get_rand_question_ind() {return rand_quest(rand_gen);}
     int get_rand_tip_pos() {return rand_tip(rand_gen);}
-    bool is_tip_to_buy() {return (rand_tip_to_buy(rand_gen)?false:true);}
+    int tip_bb_question(); //0 question, 1 tip, 2 bb
     void reset_vars();
     void ready_to_lic();
     void licitation(ekey key);
@@ -97,9 +104,15 @@ class GEngine : public GStateSnap {
     bool is_questions_set_empty() {return questions_set.size() <= 1;}
     void use_last_snap();
     int end_max_points();
-    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, std::string _prefix_to_path = "sound/");
+    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, 
+            std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, 
+            std::vector<int> blackb = {0,0}, std::string _prefix_to_path = "sound/");
 public:
-    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, bool exclude_musical = false, std::string _prefix_to_path = "sound/");
+    GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, 
+            std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, 
+            std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, 
+            std::vector<int> blackb = {0,0}, bool exclude_musical = false, 
+            std::string _prefix_to_path = "sound/");
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;

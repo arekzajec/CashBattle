@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(AoK VERSION 0.0.1)
+project(CashBattle VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,6 +18,6 @@ file(GLOB SOURCES "src/*.cpp")
 QT5_WRAP_CPP(HDR_MOC "inc/GameWindow.hpp")
 QT5_WRAP_CPP(HDR_MOC "inc/OperatorPanel.hpp")
 
-add_executable(AoK ${SOURCES} ${HDR_MOC})
+add_executable(CashBattle ${SOURCES} ${HDR_MOC})
 
-target_link_libraries(AoK PRIVATE Qt5::Widgets Qt5::Multimedia ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(CashBattle PRIVATE Qt5::Widgets Qt5::Multimedia ${Boost_PROGRAM_OPTIONS_LIBRARY})
