@@ -33,7 +33,7 @@ cmake --build .
 
 ## Run
 ```bash
-./CashBattle -i pytania.que
+./CashBattle -i questions.que
 ```
 
 ## Help
