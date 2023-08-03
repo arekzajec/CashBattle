@@ -50,7 +50,7 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questio
             int _active_team_max_points, state _current_state, Team * _active_team,
             ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
             int _current_question_ind, bool _category_visible, bool _question_visible,
-            bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count) :
+            bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count, int _question_nr) :
     teams(_teams),
     questions_set(_questions_set),
     pot(_pot),
@@ -70,18 +70,18 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questio
     rand_answ_pos(_rand_answ_pos),
     ind(_ind),
     blackbox_count(_blackbox_count),
-    question_nr(0)
+    question_nr(_question_nr)
 {}
 
 std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
-           int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int> GStateSnap::get_data() 
+           int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int,int> GStateSnap::get_data() 
 {
     return std::make_tuple(teams,questions_set,pot,oldpot,minoldpot,maxpoints,
                  active_team_max_points,current_state,active_team,
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
                  question_visible,tips_visible,
-                 rand_answ_pos,ind,blackbox_count);
+                 rand_answ_pos,ind,blackbox_count,question_nr);
 }
 
 
@@ -96,7 +96,7 @@ GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sou
                 nullptr, ekey::unknown, //active_team, active_team_key
                 0, 0, -1, //highest_bid, old_highest_bid, current_question_ind
                 false, false, false, //visible : category, question, tips
-                -1, -1, blackb[0] // rand_answ_pos, ind, blackbox_count
+                -1, -1, blackb[0], 0 // rand_answ_pos, ind, blackbox_count
             ),
     loc(localization),
     sound_player(_sound_player),
@@ -150,7 +150,7 @@ void GEngine::add_snap() {
                           active_team,active_team_key,highest_bid,
                           old_highest_bid,current_question_ind,
                           category_visible,question_visible,tips_visible,
-                          rand_answ_pos,ind,blackbox_count));
+                          rand_answ_pos,ind,blackbox_count,question_nr));
 }
 
 void GEngine::use_last_snap() {
@@ -162,7 +162,7 @@ void GEngine::use_last_snap() {
                  active_team_key,highest_bid,old_highest_bid,
                  current_question_ind,category_visible,
                  question_visible,tips_visible,
-                 rand_answ_pos,ind,blackbox_count) = snaps.top().get_data();
+                 rand_answ_pos,ind,blackbox_count,question_nr) = snaps.top().get_data();
         rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
         snaps.pop();
     }

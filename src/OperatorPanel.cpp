@@ -381,6 +381,26 @@ void OperatorQuestionInfo::replace_question(const Question & q) {
     qtip1->setText(QString::fromStdString(q.get_tips()[0]));
     qtip2->setText(QString::fromStdString(q.get_tips()[1]));
     qtip3->setText(QString::fromStdString(q.get_tips()[2]));
+    ismusic->update();
+    qquestion_nr->update();
+    qquestion->update();
+    qanswer->update();
+    qtip1->update();
+    qtip2->update();
+    qtip3->update();
+}
+
+void OperatorQuestionInfo::clear() {
+    ismusic->clear();
+    ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
+    qquestion_nr->setText(QString::number(gengine->get_question_nr())+"/"+QString::number(gengine->get_all_question_nr()));
+    qquestion->clear();
+    qanswer->clear();
+    qtip1->clear();
+    qtip2->clear();
+    qtip3->clear();
+    ismusic->update();
+    qquestion_nr->update();
     qquestion->update();
     qanswer->update();
     qtip1->update();
@@ -429,8 +449,10 @@ void OperatorPanel::refresh() {
     qstatepanel->refresh(cs,ivabq);
     qbuttons->refresh();
     qlocalgamew->refresh();
-    if (cs == state::category)
+    if (gengine->is_category_visible())
         qquest->replace_question(gengine->get_current_question());
+    else
+        qquest->clear();
     update();
 }
 

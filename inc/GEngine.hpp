@@ -66,9 +66,9 @@ public:
                int _active_team_max_points, state _current_state, Team * _active_team,
                ekey _active_team_key, int _highest_bid, int _old_highest_bid, 
                int _current_question_ind, bool _category_visible, bool _question_visible,
-               bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count);
+               bool _tips_visible, int _rand_answ_pos, int _ind, int _blackbox_count, int _question_nr);
     std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
-               int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int> get_data();
+               int,state,Team*,ekey,int,int,int,bool,bool,bool,int,int,int,int> get_data();
 };
 
 class GEngine : public GStateSnap {

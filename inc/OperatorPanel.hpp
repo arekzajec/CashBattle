@@ -260,6 +260,7 @@ private:
 public:
     OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, GEngine * _gengine, QFont font);
     void replace_question(const Question & q);
+    void clear();
 };
 
 class OperatorPanel : public QWidget {
