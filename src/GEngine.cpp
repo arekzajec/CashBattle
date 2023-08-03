@@ -69,7 +69,8 @@ GStateSnap::GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questio
     tips_visible(_tips_visible),
     rand_answ_pos(_rand_answ_pos),
     ind(_ind),
-    blackbox_count(_blackbox_count)
+    blackbox_count(_blackbox_count),
+    question_nr(0)
 {}
 
 std::tuple<std::array<Team,3>,std::vector<Question>,int,int,int,std::array<int,3>,
@@ -139,7 +140,8 @@ GEngine::GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sou
             used_questions_set.push_back(tmp);
     }
     std::stable_sort(used_questions_set.begin(),used_questions_set.end(),[&](auto & q1, auto & q2){return static_cast<int>(q1.is_used()) < static_cast<int>(q2.is_used());});
-    rand_quest = std::uniform_int_distribution<int>(1,questions_set.size()-1);
+    all_questions_nr = questions_set.size()-1;
+    rand_quest = std::uniform_int_distribution<int>(1,all_questions_nr);
 }
 
 void GEngine::add_snap() {
@@ -480,6 +482,12 @@ std::array<std::string,4> GEngine::get_tips() const {
     }
     return ans;
 }
+
+int GEngine::get_rand_question_ind() {
+    question_nr++;
+    return fixed_q_order ? 1 : rand_quest(rand_gen);
+}
+
 
 int GEngine::tip_bb_question() {
     double num = rand_tip_bb_to_buy(rand_gen);

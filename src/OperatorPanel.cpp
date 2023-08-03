@@ -309,14 +309,21 @@ void QButtonDescGroup::refresh() {
     }
 }
 
-OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, QFont font) : 
-    QWidget(parent), loc(localization) {
+OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, GEngine * _gengine, QFont font) : 
+    QWidget(parent), gengine(_gengine), loc(localization) {
     layout = new QVBoxLayout(this);
+    flay = new QHBoxLayout(this);
     ismusic = new QLabel(this);
     ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
     ismusic->setWordWrap(true);
     ismusic->setFont(font);
     ismusic->setAlignment(Qt::AlignCenter);
+
+    qquestion_nr = new QLabel(this);
+    qquestion_nr->setStyleSheet("QLabel {background-color : grey; color : black; }");
+    qquestion_nr->setWordWrap(true);
+    qquestion_nr->setFont(font);
+    qquestion_nr->setAlignment(Qt::AlignCenter);
 
     qquestion = new QLabel(this);
     qquestion->setStyleSheet("QLabel {background-color : grey; color : black; }");
@@ -348,7 +355,11 @@ OperatorQuestionInfo::OperatorQuestionInfo(QWidget * parent, OperatorQuestionInf
     qtip3->setFont(font);
     qtip3->setAlignment(Qt::AlignCenter);
 
-    layout->addWidget(ismusic);
+    layout->addLayout(flay);
+        flay->addWidget(ismusic);
+        flay->addWidget(qquestion_nr);
+        flay->setStretch(0, 1);
+        flay->setStretch(1, 1);
     layout->addWidget(qquestion);
     layout->addWidget(qanswer);
     layout->addWidget(qtip1);
@@ -364,6 +375,7 @@ void OperatorQuestionInfo::replace_question(const Question & q) {
         ismusic->setText(loc->strRegular());
         ismusic->setStyleSheet("QLabel {background-color : grey; color : black; }");
     }
+    qquestion_nr->setText(QString::number(gengine->get_question_nr())+"/"+QString::number(gengine->get_all_question_nr()));
     qquestion->setText(QString::fromStdString(q.get_question()));
     qanswer->setText(QString::fromStdString(q.get_answer()));
     qtip1->setText(QString::fromStdString(q.get_tips()[0]));
@@ -390,7 +402,7 @@ OperatorPanel::OperatorPanel(OperatorPanelLocInterface * localization, GameWindo
     qbuttons = new QButtonDescGroup(this,loc->getQButtonLoc(),gengine,font,scale);
     rightlayout = new QVBoxLayout();
     qlocalgamew = new GameWindow(loc->getGameWinLoc(),*gengine, 0.35*scale, false, true);
-    qquest = new OperatorQuestionInfo(this,loc->getOperQInfLoc(),font);
+    qquest = new OperatorQuestionInfo(this,loc->getOperQInfLoc(),gengine,font);
     mainlayout->addWidget(qstatepanel);
     mainlayout->addWidget(qbuttons);
     mainlayout->addLayout(rightlayout);

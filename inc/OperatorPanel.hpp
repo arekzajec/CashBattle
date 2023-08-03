@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QCommonStyle>
 #include <QStyleOptionButton>
+#include <qboxlayout.h>
 #include <qlabel.h>
 
 class QStatePanelLocInterface {
@@ -245,16 +246,19 @@ private slots:
 class OperatorQuestionInfo : public QWidget {
     Q_OBJECT
 private:
+    GEngine * gengine;
     OperatorQuestionInfoLocInterface * loc;
     QVBoxLayout *layout;
+    QHBoxLayout *flay;
     QLabel *ismusic;
+    QLabel *qquestion_nr;
     QLabel *qquestion;
     QLabel *qanswer;
     QLabel *qtip1;
     QLabel *qtip2;
     QLabel *qtip3;
 public:
-    OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, QFont font);
+    OperatorQuestionInfo(QWidget * parent, OperatorQuestionInfoLocInterface * localization, GEngine * _gengine, QFont font);
     void replace_question(const Question & q);
 };
 

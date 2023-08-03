@@ -59,6 +59,7 @@ protected:
     int rand_answ_pos;
     int ind;
     int blackbox_count;
+    int question_nr;
 public:
     GStateSnap(std::array<Team,3> _teams, std::vector<Question> _questions_set,
                int _pot, int _oldpot, int _minoldpot, std::array<int,3> _maxpoints,
@@ -84,6 +85,7 @@ class GEngine : public GStateSnap {
     int bb_buy_tresh;
     int tbq;
     bool fixed_q_order;
+    int all_questions_nr;
     Timer timer;
 
     std::array<int,3> va_banque_tab;
@@ -94,7 +96,7 @@ class GEngine : public GStateSnap {
     void resetallhighlight() {for (auto & x : teams) x.resethlight();}
     void resetallinvestedpoints() {for (auto & x: teams) x.reset_points_invested();}
     bool chooseActiveTeam(ekey key);
-    int get_rand_question_ind() {return fixed_q_order ? 1 : rand_quest(rand_gen);}
+    int get_rand_question_ind();
     int get_rand_tip_pos() {return rand_tip(rand_gen);}
     int tip_bb_question(); //0 question, 1 tip, 2 bb
     void reset_vars();
@@ -135,6 +137,8 @@ public:
     int get_minoldpot() const {return minoldpot;}
     int get_old_highest_bid () const {return old_highest_bid;}
     int get_active_team_max_point() const {return active_team_max_points;}
+    int get_question_nr() const {return question_nr;}
+    int get_all_question_nr() const {return all_questions_nr;}
     virtual ~GEngine();
 };
 
