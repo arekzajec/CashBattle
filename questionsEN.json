@@ -1,0 +1,57 @@
+{   "question_set": [
+    {
+        "category": "Football",
+        "question": "How many Asian countries hosted the Men's World Cup before Qatar was entrusted with hosting the tournament?",
+        "correct_answer": "2",
+        "incorrect_answer_1": "0",
+        "incorrect_answer_2": "1",
+        "incorrect_answer_3": "3",
+        "path_to_sound": "",
+        "used_before": "0"
+    },{
+        "category": "Film",
+        "question": "What country is Oscar-winning actress and film producer Charlize Theron from?",
+        "correct_answer": "South Africa",
+        "incorrect_answer_1": "USA",
+        "incorrect_answer_2": "Australia",
+        "incorrect_answer_3": "Sweden",
+        "path_to_sound": "",
+        "used_before": "0"
+    },{
+        "category": "Proverbs",
+        "question": "Which fish in the well-known saying wriggles deftly and cleverly?",
+        "correct_answer": "piscator",
+        "incorrect_answer_1": "sturgeon",
+        "incorrect_answer_2": "pike",
+        "incorrect_answer_3": "catfish",
+        "path_to_sound": "",
+        "used_before": "0"
+    },{
+        "category": "Classical Music",
+        "question": "An excerpt from which symphony by Ludwig van Beethoven is \"Ode to Joy\"?",
+        "correct_answer": "9",
+        "incorrect_answer_1": "7",
+        "incorrect_answer_2": "5",
+        "incorrect_answer_3": "6",
+        "path_to_sound": "sound001",
+        "used_before": "0"
+    },{
+        "category": "Football",
+        "question": "Which stage of the 2016 European Championship in France did the Polands men's national football team reach?",
+        "correct_answer": "Quarterfinal",
+        "incorrect_answer_1": "Group stage",
+        "incorrect_answer_2": "1/8",
+        "incorrect_answer_3": "did not qualify",
+        "path_to_sound": "",
+        "used_before": "1"
+    },{
+        "category": "Mathematics",
+        "question": "In what century did Isaac Newton and Gottfried Leibniz discover differential calculus",
+        "correct_answer": "17",
+        "incorrect_answer_1": "16",
+        "incorrect_answer_2": "18",
+        "incorrect_answer_3": "19",
+        "path_to_sound": "",
+        "used_before": "1"
+    }
+]}

@@ -1,5 +1,11 @@
 # Main program
 
+This is homemade implementation of system used in popular polish TV show "Awanura o Kasę" ("Cash Battle" in New Zealand).
+
+[Short promo of verion aired in New Zealand.](https://www.youtube.com/watch?v=AOx8KhTjwQs)
+
+All episodes aired in Poland can be found [here](https://www.youtube.com/@awanturaokase8867).
+
 ## Instalation
 
 1. Install Qt
@@ -32,8 +38,13 @@ cmake --build .
 ```
 
 ## Run
+In english:
 ```bash
-./CashBattle -i questions.que
+./CashBattle -i questionsEN.que -l EN
+```
+In polish:
+```bash
+./CashBattle -i questionsPL.que
 ```
 
 ## Help

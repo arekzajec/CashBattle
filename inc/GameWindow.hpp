@@ -24,7 +24,7 @@ class QTeamLocPL : public QTeamLocInterface {
 
 class QTeamLocEN : public QTeamLocInterface {
     public:
-    QString strAccount() {return "ACCOUNT";}
+    QString strAccount() {return "BALANCE";}
 };
 
 
@@ -52,9 +52,9 @@ class GameWindowLocEN : public GameWindowLocInterface {
     public:
     GameWindowLocEN() {qteam = new QTeamLocEN;}
     QString strTitle() {return "Cash Battle";}
-    QString strLicitation() {return "LICITATION";}
+    QString strLicitation() {return "BIDDING";}
     QString strTime() {return "TIME";}
-    QString strPot() {return "POT";}
+    QString strPot() {return "POOL";}
 };
 
 class QTeam : public QWidget {

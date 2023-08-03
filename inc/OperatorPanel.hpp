@@ -53,11 +53,11 @@ class QStatePanelLocEN : public QStatePanelLocInterface {
     QString strDeactivated() {return "deactivated";}
     QString strPunishment() {return "punishment";}
     QString strCategory() {return "category";}
-    QString strExtraPot() {return "extra pot";}
-    QString strTip() {return "tip";}
-    QString strLicitationStart() {return "licitation - start";}
-    QString strLicitation() {return "licitation";}
-    QString strLicitationBlock() {return "licitation - blocked";}
+    QString strExtraPot() {return "extra pool";}
+    QString strTip() {return "hint";}
+    QString strLicitationStart() {return "bidding - start";}
+    QString strLicitation() {return "bidding";}
+    QString strLicitationBlock() {return "bidding - blocked";}
     QString strSold() {return "sold";}
     QString strMusical() {return "play music";}
     QString strQuestion() {return "question";}
@@ -87,6 +87,8 @@ class QButtonDescGroupLocInterface {
     virtual QString strLeads() = 0;
     virtual QString strVaBanque() = 0;
     virtual QString strBlocks() = 0;
+    virtual QString strForceTip() = 0;
+    virtual QString strForceBB() = 0;
 };
 
 class QButtonDescGroupLocPL : public QButtonDescGroupLocInterface {
@@ -110,6 +112,8 @@ class QButtonDescGroupLocPL : public QButtonDescGroupLocInterface {
     QString strLeads() {return " licytują!";}
     QString strVaBanque() {return " va banque!";}
     QString strBlocks() {return " blokują przeciwników!";}
+    QString strForceTip() {return "wymuś podpowiedź";}
+    QString strForceBB() {return "wymuś czarną skrzynkę";}
 };
 
 class QButtonDescGroupLocEN : public QButtonDescGroupLocInterface {
@@ -120,19 +124,21 @@ class QButtonDescGroupLocEN : public QButtonDescGroupLocInterface {
     QString strUp100Team() {return "return 100 to team: ";}
     QString strDown100Team() {return "take 100 from team: ";}
     QString strPickTeam() {return "pick team: ";}
-    QString strUp100Pot() {return "add 100 to pot";}
-    QString strDown100Pot() {return "take 100 from pot";}
+    QString strUp100Pot() {return "add 100 to pool";}
+    QString strDown100Pot() {return "take 100 from pool";}
     QString strUp100TeamLic() {return "add 100 to bid of team: ";}
     QString strDown100TeamLic() {return "take 100 from bid of team: ";}
     QString strCorrectAnswer() {return "correct answer";}
     QString strIncorrectAnswer() {return "incorrect answer";}
-    QString strShowTip() {return "show tip";}
+    QString strShowTip() {return "show hint";}
     QString strStopTime() {return "stop reply time";}
     QString strStartTime() {return "start reply time";}
     QString strUndo() {return "undo";}
     QString strLeads() {return " team is leading!";}
     QString strVaBanque() {return " va banque!";}
     QString strBlocks() {return " blocks oponents!";}
+    QString strForceTip() {return "force hint";}
+    QString strForceBB() {return "force black box";}
 };
 
 class OperatorQuestionInfoLocInterface {

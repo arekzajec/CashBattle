@@ -4,15 +4,13 @@ Current issues and directions for future development
 
 ### Functinal
 
-* tip or blackbox on demand from `Operator Panel`
-* mode with turned off the randomness of question, the sequence will be determined by question set
 * one-to-one question mode
 * extend number of teams to N (but I cannot believe that person can follow licitiation with N > 5)
 
 ### Graphical
 
 * better icons for `up`, `down` and `enter` in `Operator Panel`
-* number of displayed teams depends on number participating 
+* number of displayed teams depends on number participating (in `Game Window`)
 * more estetical view in `Operator Panel`
 * rework of scaling: `Game Window` and `Operator Panel` depends from screen resolution (either automaticly detected or as an arguments)
 

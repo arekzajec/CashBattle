@@ -1,4 +1,5 @@
 #include "OperatorPanel.hpp"
+#include "GEngine.hpp"
 
 QLabel * QStatePanel::newQLabel(QString str, QFont font) {
     QLabel * ans = new QLabel(str,this);
@@ -89,7 +90,7 @@ QButtonDescGroup::QButtonDescGroup(QWidget * parent, QButtonDescGroupLocInterfac
     qbuttons.push_back(new QButtonDesc(this,font,QString("C"),scale));
     qbuttons.push_back(new QButtonDesc(this,font,QString("A"),scale));
     qbuttons.push_back(new QButtonDesc(this,font,QString("D"),scale));
-    qbuttons.push_back(new QButtonDesc(this,font,QString("T"),scale));
+    qbuttons.push_back(new QButtonDesc(this,font,QString("H"),scale));
     qbuttons.push_back(new QButtonDesc(this,font,QString("S"),scale));
     qbuttons.push_back(new QButtonDesc(this,font,QString("U"),scale));
     for (auto & x : qbuttons) {
@@ -118,7 +119,7 @@ void QButtonDescGroup::released_slot() {
         case 7: key = ekey::c;break;
         case 8: key = ekey::a;break;
         case 9: key = ekey::d;break;
-        case 10: key = ekey::t;break;
+        case 10: key = ekey::h;break;
         case 11: key = ekey::s;break;
         case 12: key = ekey::u;break;
 
@@ -166,13 +167,17 @@ void QButtonDescGroup::refresh() {
     state cs = gengine->get_current_state();
     switch (cs) {
         case state::idle : {
-            setButtonsEnabled({2,3}); //Enter, P
+            setButtonsEnabled({2,3,4,10}); //Enter, P, E, T
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strCategory());
             setLabelText(3,loc->strGoTo()+loc->getQStateLoc()->strPunishment());
+            setLabelText(4,loc->strForceBB());
+            setLabelText(10,loc->strForceTip());
         };break;
         case state::punishment : {
-            setButtonsEnabled({2}); //Enter
+            setButtonsEnabled({2,4,10}); //Enter, E, T
             setLabelText(2,loc->strGoTo()+loc->getQStateLoc()->strCategory());
+            setLabelText(4,loc->strForceBB());
+            setLabelText(10,loc->strForceTip());
             ateam = gengine->get_active_team();
             if (ateam) {
                 for (int i=0;i<3;++i) {
@@ -420,10 +425,11 @@ void OperatorPanel::refresh() {
 void OperatorPanel::send2engine_and_refresh(ekey key) {
     state old_state = gengine->get_current_state();
     gengine->perform_action(key);
-    if (key == ekey::enter && old_state == state::idle ||
-        key == ekey::enter && old_state == state::punishment) {
+    if ((key == ekey::enter || key == ekey::e || key == ekey::h) 
+         && (old_state == state::idle || old_state == state::punishment )) 
+    {
         gwindow->cat_rand_animation();
-        }
+    }
     gwindow->refresh();
     refresh();
 }
@@ -440,7 +446,7 @@ void OperatorPanel::keyPressEvent(QKeyEvent *event)
         case Qt::Key_C : key = ekey::c;break;
         case Qt::Key_Up : key = ekey::up;break;
         case Qt::Key_Down : key = ekey::down;break;
-        case Qt::Key_T : key = ekey::t;break;
+        case Qt::Key_H : key = ekey::h;break;
         case Qt::Key_A : key = ekey::a;break;
         case Qt::Key_D : key = ekey::d;break;
         case Qt::Key_P : key = ekey::p;break;

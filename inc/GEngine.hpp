@@ -16,7 +16,7 @@
 #include "SoundPlayer.hpp"
 
 enum class state {idle, punishment, category, tip_buy,extra_pot, start_lic, lic, sold, music_question, question, end};
-enum class ekey {unknown, z, x, c, enter, up, down, t, a, d, p, e, s, u};
+enum class ekey {unknown, z, x, c, enter, up, down, h, a, d, p, e, s, u};
 
 class GEngineLocInterface {
     public:
@@ -32,7 +32,7 @@ class GEngineLocPL : public GEngineLocInterface {
 
 class GEngineLocEN : public GEngineLocInterface {
     public:
-    std::string strTip() {return "Tip";}
+    std::string strTip() {return "Hint";}
     std::string strBlackBox() {return "Black box";}
 };
 
@@ -83,6 +83,7 @@ class GEngine : public GStateSnap {
     int tip_buy_tresh;
     int bb_buy_tresh;
     int tbq;
+    bool fixed_q_order;
     Timer timer;
 
     std::array<int,3> va_banque_tab;
@@ -93,7 +94,7 @@ class GEngine : public GStateSnap {
     void resetallhighlight() {for (auto & x : teams) x.resethlight();}
     void resetallinvestedpoints() {for (auto & x: teams) x.reset_points_invested();}
     bool chooseActiveTeam(ekey key);
-    int get_rand_question_ind() {return rand_quest(rand_gen);}
+    int get_rand_question_ind() {return fixed_q_order ? 1 : rand_quest(rand_gen);}
     int get_rand_tip_pos() {return rand_tip(rand_gen);}
     int tip_bb_question(); //0 question, 1 tip, 2 bb
     void reset_vars();
@@ -106,13 +107,13 @@ class GEngine : public GStateSnap {
     int end_max_points();
     GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ofstream & _outf, 
             std::array<Team,3> _teams, uint time2answer = 60, uint tip_freq = 10, 
-            std::vector<int> blackb = {0,0}, std::string _prefix_to_path = "sound/");
+            std::vector<int> blackb = {0,0}, std::string _prefix_to_path = "sound/", bool fixed_order = false);
 public:
     GEngine(GEngineLocInterface * localization, SoundPlayerInterface * _sound_player, std::ifstream & qf, 
             std::ofstream & _outf, std::array<Team,3> _teams, std::vector<std::string> Inc, 
             std::vector<std::string> Exc, uint time2answer = 60, uint tip_freq = 10, 
             std::vector<int> blackb = {0,0}, bool exclude_musical = false, 
-            std::string _prefix_to_path = "sound/");
+            std::string _prefix_to_path = "sound/", bool fixed_order = false);
     const Team & get_team(uint ind) const {return teams[ind];}
     int get_pot() const {return pot;}
     bool is_any_team_va_banque() const;

@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
                                           string(progname.size(),' ') +
                                           " [ -e ] [ -P path ]" +
                                           " [ -I list ] [ -E list ]" +
-                                          " [ -d ]" +
+                                          " [ -F ] [ -d ]" +
                                           "\nArguments");
     try {
         vector<string> blue;
@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
             ("path_to_wavs,P",po::value<string>()->value_name("path")->default_value("sounds/"),"path do directory where .wav files for musical questions are")
             ("include_categories,I",po::value<vector<string>>(&Inc)->multitoken()->value_name("list")->default_value({"All"},"All"),"list of questions categories that game will read from question file.\nAll - all categories.\nexample: -I All\nexample: -I Football \"Classical Music\"")
             ("exclude_categories,E",po::value<vector<string>>(&Exc)->multitoken()->value_name("list"),"list of questions categories that game will not read from question file.\nWorks only if option -I is not used or set to All\nexample: -E Football \"Classical Music\"\nexample: -I All -E Football \"Classical Music\"")
+            ("fixed_question_orded,F","instead of a random order of questions, the order given in the .que file will be used.\nConsider turning off random tip and blackbox chance as well\nex.( -f 0 -b 0 0 )")
             ("dry_run,d","program will not be exacuted, but checking integrity of qeustions set and all filtering operations (-i, -o, -e, -P, -I, -E) will be performed. Also, program will check if all other program parameters are set correctly.")
         ;
         
@@ -164,7 +165,8 @@ int main(int argc, char* argv[]) {
                         tip_prob,
                         blackb,
                         vm.count("exclude_musical"),
-                        vm["path_to_wavs"].as<string>());
+                        vm["path_to_wavs"].as<string>(),
+                        vm.count("fixed_question_orded"));
         if (vm.count("dry_run")) {
             std::cout << "dry run is completed, check out " + vm["questions_output_file"].as<string>() << std::endl;
             return 0;
