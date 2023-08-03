@@ -1,6 +1,6 @@
 # Main program
 
-This is homemade implementation of system used in popular polish TV show "Awanura o Kasę" ("Cash Battle" in New Zealand).
+This is homemade implementation of system used in popular polish TV show "Awantura o Kasę" ("Cash Battle" in New Zealand).
 
 [Short promo of verion aired in New Zealand.](https://www.youtube.com/watch?v=AOx8KhTjwQs)
 
